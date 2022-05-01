@@ -30,7 +30,9 @@ var/datum/controller/subsystem/ticker/SSticker
 
 	var/Bible_icon_state	// icon_state the chaplain has chosen for his bible
 	var/Bible_item_state	// item_state the chaplain has chosen for his bible
-	var/Bible_name			// name of the bible
+	var/Bible_name			// Name of the bible.
+	var/Bible_desc			// Description of the bible.
+	var/Bible_desc_fluff	// Fluff description of the bible.
 	var/Bible_deity_name
 
 	var/random_players = 0 	// if set to nonzero, ALL players who latejoin or declare-ready join will have random appearances/genders

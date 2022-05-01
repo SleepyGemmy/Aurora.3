@@ -37,6 +37,7 @@
 #define RELIGION_SCARAB "Scarab Folk Beliefs"
 #define RELIGION_TAOISM "Taoism"
 #define RELIGION_LUCEISM "Luceism"
+#define RELIGION_FORNSED "Forn Sed"
 
 #define RELIGION_THAKH "Th'akh"
 #define RELIGION_SKAKH "Sk'akh"

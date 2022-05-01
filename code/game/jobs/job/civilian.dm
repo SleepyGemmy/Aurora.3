@@ -287,7 +287,7 @@
 	selection_color = "#90524b"
 	access = list(access_morgue, access_chapel_office, access_crematorium, access_maint_tunnels)
 	minimal_access = list(access_morgue, access_chapel_office, access_crematorium)
-	alt_titles = list("Presbyter","Rabbi","Imam","Priest","Shaman","Counselor")
+	alt_titles = list("Presbyter", "Rabbi", "Imam", "Priest", "Shaman", "Counselor", "Gode")
 	outfit = /datum/outfit/job/chaplain
 
 	blacklisted_species = list(SPECIES_VAURCA_BREEDER)
@@ -327,9 +327,13 @@
 
 		B.icon_state = religion.book_sprite
 		B.name = religion.book_name
+		B.desc = religion.book_desc
+		B.desc_fluff = religion.book_desc_fluff
 		SSticker.Bible_icon_state = religion.book_sprite
 		SSticker.Bible_item_state = religion.book_sprite
 		SSticker.Bible_name = religion.book_name
+		SSticker.Bible_desc = religion.book_desc
+		SSticker.Bible_desc_fluff = religion.book_desc_fluff
 		return 1
 
 

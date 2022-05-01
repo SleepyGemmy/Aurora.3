@@ -278,6 +278,8 @@ datum/borrowbook // Datum used to keep track of who has borrowed what when and f
 						B.icon_state = SSticker.Bible_icon_state
 						B.item_state = SSticker.Bible_item_state
 						B.name = SSticker.Bible_name
+						B.desc = SSticker.Bible_desc
+						B.desc_fluff = SSticker.Bible_desc_fluff
 
 					bibledelay = 1
 					spawn(60)
