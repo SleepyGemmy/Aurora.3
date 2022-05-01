@@ -84,9 +84,14 @@
 // Forn Sed
 /datum/religion/fornsed
 	name = RELIGION_FORNSED
-	description = "Forn Sed, which is also known by its synonyms Asatro and Vanatro, is a polytheistic and syncretic religion that originates from the Old Norse religion. Those who practice it may believe in any of the Norse cultural customs, folk beliefs, mythology, or religious beliefs such as the aesir gods, the vanir gods, aswell as other beings and omens.\nForn Sed is most commonly practiced by those who come from Scandinavian societies, colonies, or groups, such as New Gibson and the Scarab fleet ships Bilröst, Jörmungandr, and Jötunheimr, but is practiced by many other people aswell.\nForn Sed and any alternative spellings means \"past customs\" in Scandinavian languages. Someone who acts as a cleric for Forn Sed is a Gode, which is equivalent to \"Priest\". Someone who practices Forn Sed is a Forn Sedian, Asatroer, or Vanatroer."
+	description = "Forn Sed, which is also known by its synonyms Asatro and Vanatro, is a polytheistic and syncretic religion that originates from the Old Norse religion. \
+	Those who practice it may believe in any of the Norse cultural customs, folk beliefs, mythology, or religious beliefs such as the aesir gods, the vanir gods, aswell \
+	as other beings and omens.\nForn Sed is most commonly practiced by those who come from Scandinavian societies, colonies, or groups, such as New Gibson and the Scarab \
+	fleet ships Bilröst, Jörmungandr, and Jötunheimr, but is practiced by many other people aswell.\nForn Sed and any alternative spellings means \"past customs\" in \
+	Scandinavian languages. Someone who acts as a cleric for Forn Sed is a Gode, which is equivalent to \"Priest\". Someone who practices Forn Sed is a Forn Sedian, \
+	Asatroer, or Vanatroer."
 
 	book_name = "\improper Forn Sed codex, 4th edition"
 	book_desc = "A book describing the many different cultural customs and religious beliefs of those who practice Forn Sed."
-	book_desc_fluff = "Forn Sed, which is also known by its synonyms Asatro and Vanatro, is a polytheistic and syncretic religion that originates from the Old Norse religion. Those who practice it may believe in any of the Norse cultural customs, folk beliefs, mythology, or religious beliefs such as the aesir gods, the vanir gods, aswell as other beings and omens.\nForn Sed is most commonly practiced by those who come from Scandinavian societies, colonies, or groups, such as New Gibson and the Scarab fleet ships Bilröst, Jörmungandr, and Jötunheimr, but is practiced by many other people aswell.\nForn Sed and any alternative spellings means \"past customs\" in Scandinavian languages. Someone who acts as a cleric for Forn Sed is a Gode, which is equivalent to \"Priest\". Someone who practices Forn Sed is a Forn Sedian, Asatroer, or Vanatroer."
+	book_desc_fluff = description
 	book_sprite = "fornsed"
