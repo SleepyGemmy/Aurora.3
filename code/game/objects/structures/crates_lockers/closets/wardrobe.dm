@@ -71,12 +71,12 @@
 	return
 
 
-/obj/structure/closet/wardrobe/chaplain_black
-	name = "chapel wardrobe"
-	desc = "It's a storage unit for approved religious attire."
+/obj/structure/closet/wardrobe/chaplain
+	name = "chaplain wardrobe"
+	desc = "It's a storage unit for various religious attire."
 	icon_door = "black"
 
-/obj/structure/closet/wardrobe/chaplain_black/fill()
+/obj/structure/closet/wardrobe/chaplain/fill()
 	..()
 	new /obj/item/clothing/under/rank/chaplain(src)
 	new /obj/item/clothing/shoes/black(src)
@@ -91,7 +91,6 @@
 	new /obj/item/mesmetron(src)
 	new /obj/item/toy/plushie/therapy(src)
 	return
-
 
 /obj/structure/closet/wardrobe/green
 	name = "green wardrobe"

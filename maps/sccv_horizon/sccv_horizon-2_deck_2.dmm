@@ -2568,7 +2568,7 @@
 /turf/simulated/floor/plating,
 /area/engineering/engine_waste)
 "bsM" = (
-/obj/structure/closet/wardrobe/chaplain_black,
+/obj/structure/closet/wardrobe/chaplain,
 /obj/item/storage/box/fancy/crayons,
 /obj/item/storage/box/fancy/candle_box,
 /obj/item/storage/box/fancy/candle_box,
