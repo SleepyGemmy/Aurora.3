@@ -11,7 +11,7 @@
 /obj/structure/pit/attackby(obj/item/W, mob/user)
 	if(istype(W,/obj/item/shovel))
 		visible_message("<span class='notice'>\The [user] starts [open ? "filling" : "digging open"] \the [src]</span>")
-		if(do_after(user, 50))
+		if(W.use_tool(src, user, 50, volume = 50))
 			visible_message("<span class='notice'>\The [user] [open ? "fills" : "digs open"] \the [src]!</span>")
 			if(open)
 				close(user)
@@ -62,8 +62,6 @@
 /obj/structure/pit/return_air()
 	if(open && loc)
 		return loc.return_air()
-	else
-		return null
 
 /obj/structure/pit/proc/digout(mob/escapee)
 	var/breakout_time = 1 //2 minutes by default

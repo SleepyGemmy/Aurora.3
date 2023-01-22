@@ -31,7 +31,7 @@
 	flying = 1
 	mob_size = MOB_LARGE
 	see_in_dark = 8
-	pass_flags = PASSTABLE
+	pass_flags = PASSTABLE|PASSRAILING
 	attack_emote = "focuses on"
 	var/mob/living/simple_animal/hostile/hivebotbeacon/linked_parent = null
 	var/turf/last_processed_turf
@@ -209,7 +209,7 @@
 			update_icon()
 			if(do_after(src, 32))
 				src.visible_message(SPAN_WARNING("[src] rips up \the [T]."))
-				playsound(src.loc, /decl/sound_category/crowbar_sound, 100, 1)
+				playsound(src.loc, /singleton/sound_category/crowbar_sound, 100, 1)
 				T.make_plating(1)
 			busy = 0
 			update_icon()
@@ -309,7 +309,7 @@
 			G.attack_generic(src,rand(melee_damage_lower,melee_damage_upper),attacktext)
 			return
 
-		if(istype(O, /obj/structure/barricade) || istype(O, /obj/structure/closet) || istype(O, /obj/structure/inflatable))
+		if(istype(O, /obj/structure/blocker) || istype(O, /obj/structure/closet) || istype(O, /obj/structure/inflatable))
 			var/obj/structure/S = O
 			rapid = 1
 			OpenFire(S)

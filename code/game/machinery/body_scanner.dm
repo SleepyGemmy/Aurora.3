@@ -17,9 +17,9 @@
 			/obj/item/stock_parts/scanning_module = 2,
 			/obj/item/device/healthanalyzer
 		)
-	use_power = 1
 	idle_power_usage = 60
 	active_power_usage = 10000	//10 kW. It's a big all-body scanner.
+	obj_flags = OBJ_FLAG_MOVES_UNSUPPORTED
 
 	var/mob/living/carbon/occupant
 	var/last_occupant_name = ""
@@ -56,10 +56,20 @@
 /obj/machinery/bodyscanner/update_icon()
 	flick("[initial(icon_state)]-anim", src)
 	if(occupant)
-		icon_state = "[initial(icon_state)]-closed"
+		name = "[name] ([occupant])"
+		if(stat & BROKEN)
+			icon_state = "[initial(icon_state)]-broken-closed"
+		if(stat & NOPOWER)
+			icon_state = "[initial(icon_state)]-closed"
+		else
+			icon_state = "[initial(icon_state)]-working"
 		return
 	else
-		icon_state = initial(icon_state)
+		name = initial(name)
+		if(stat & BROKEN)
+			icon_state = "[initial(icon_state)]-broken"
+		else
+			icon_state = initial(icon_state)
 
 /obj/machinery/bodyscanner/relaymove(mob/user as mob)
 	if (user.stat)
@@ -96,7 +106,7 @@
 	usr.client.eye = src
 	usr.forceMove(src)
 	occupant = usr
-	update_use_power(2)
+	update_use_power(POWER_USE_ACTIVE)
 	update_icon()
 	add_fingerprint(usr)
 	return
@@ -114,7 +124,7 @@
 		occupant.client.perspective = MOB_PERSPECTIVE
 	occupant.forceMove(loc)
 	occupant = null
-	update_use_power(1)
+	update_use_power(POWER_USE_IDLE)
 	update_icon()
 	return
 
@@ -141,7 +151,7 @@
 
 		M.forceMove(src)
 		occupant = M
-		update_use_power(2)
+		update_use_power(POWER_USE_ACTIVE)
 		update_icon()
 		//Foreach goto(154)
 	add_fingerprint(user)
@@ -181,7 +191,7 @@
 			M.client.eye = src
 		M.forceMove(src)
 		occupant = M
-		update_use_power(2)
+		update_use_power(POWER_USE_ACTIVE)
 		update_icon()
 		playsound(loc, 'sound/machines/medbayscanner1.ogg', 50)
 	add_fingerprint(user)
@@ -248,7 +258,7 @@
 	icon = 'icons/obj/sleeper.dmi'
 	icon_state = "body_scannerconsole"
 	var/obj/machinery/bodyscanner/connected
-	var/known_implants = list(/obj/item/implant/chem, /obj/item/implant/death_alarm, /obj/item/implant/mindshield, /obj/item/implant/tracking)
+	var/known_implants = list(/obj/item/implant/chem, /obj/item/implant/death_alarm, /obj/item/implant/mindshield, /obj/item/implant/tracking, /obj/item/implant/integrated_circuit)
 	var/collapse_desc = ""
 	var/broken_desc = ""
 	var/has_internal_injuries = FALSE
@@ -439,12 +449,12 @@
 		VUEUI_SET_CHECK(data["paralysis"], occupant.paralysis, ., data)
 		VUEUI_SET_CHECK(data["bodytemp"], occupant.bodytemperature, ., data)
 		VUEUI_SET_CHECK(data["occupant"], !!occupant, ., data)
-		VUEUI_SET_CHECK(data["norepiAmt"], REAGENT_VOLUME(R, /decl/reagent/inaprovaline), ., data)
-		VUEUI_SET_CHECK(data["soporAmt"], REAGENT_VOLUME(R, /decl/reagent/soporific), ., data)
-		VUEUI_SET_CHECK(data["bicardAmt"], REAGENT_VOLUME(R, /decl/reagent/bicaridine), ., data)
-		VUEUI_SET_CHECK(data["dexAmt"], REAGENT_VOLUME(R, /decl/reagent/dexalin), ., data)
-		VUEUI_SET_CHECK(data["dermAmt"], REAGENT_VOLUME(R, /decl/reagent/dermaline), ., data)
-		VUEUI_SET_CHECK(data["thetaAmt"], REAGENT_VOLUME(R, /decl/reagent/thetamycin), ., data)
+		VUEUI_SET_CHECK(data["norepiAmt"], REAGENT_VOLUME(R, /singleton/reagent/inaprovaline), ., data)
+		VUEUI_SET_CHECK(data["soporAmt"], REAGENT_VOLUME(R, /singleton/reagent/soporific), ., data)
+		VUEUI_SET_CHECK(data["bicardAmt"], REAGENT_VOLUME(R, /singleton/reagent/bicaridine), ., data)
+		VUEUI_SET_CHECK(data["dexAmt"], REAGENT_VOLUME(R, /singleton/reagent/dexalin), ., data)
+		VUEUI_SET_CHECK(data["dermAmt"], REAGENT_VOLUME(R, /singleton/reagent/dermaline), ., data)
+		VUEUI_SET_CHECK(data["thetaAmt"], REAGENT_VOLUME(R, /singleton/reagent/thetamycin), ., data)
 		VUEUI_SET_CHECK(data["otherAmt"], R.total_volume - (data["soporAmt"] + data["dexAmt"] + data["bicardAmt"] + data["norepiAmt"] + data["dermAmt"] + data["thetaAmt"]), ., data)
 		has_internal_injuries = FALSE
 		has_external_injuries = FALSE
@@ -491,9 +501,9 @@
 	var/organs = list()
 	for (var/obj/item/organ/external/O in H.organs)
 		var/list/data = list()
-		var/burn_damage = get_wound_severity(O.burn_ratio, TRUE)
+		var/burn_damage = get_severity(O.burn_dam, TRUE)
 		data["burnDmg"] = burn_damage
-		var/brute_damage = get_wound_severity(O.brute_ratio, TRUE)
+		var/brute_damage = get_severity(O.brute_dam, TRUE)
 		data["bruteDmg"] = brute_damage
 		data["name"] = capitalize_first_letters(O.name)
 
@@ -509,7 +519,7 @@
 			wounds += "Splinted."
 		if (O.status & ORGAN_BLEEDING)
 			wounds += "Bleeding."
-		if(O.is_dislocated())
+		if(ORGAN_IS_DISLOCATED(O))
 			wounds += "Dislocated."
 		if (O.status & ORGAN_BROKEN)
 			wounds += "[O.broken_description]."
@@ -524,13 +534,19 @@
 
 		if (O.implants.len)
 			var/unk = 0
+			var/list/organic = list()
 			for (var/atom/movable/I in O.implants)
-				if (is_type_in_list(I, known_implants))
+				if(is_type_in_list(I, known_implants))
 					wounds += "\a [I.name] is installed."
+				else if(istype(I, /obj/effect/spider))
+					organic += I
 				else
 					unk += 1
 			if (unk)
 				wounds += "Has an abnormal mass present."
+			var/friends = length(organic)
+			if(friends)
+				wounds += friends > 1 ? "Multiple abnormal organic bodies present." : "Abnormal organic body present."
 
 		if(length(wounds) || brute_damage != "None" || burn_damage != "None")
 			has_external_injuries = TRUE
@@ -647,13 +663,13 @@
 		"paralysis" = H.paralysis,
 		"bodytemp" = H.bodytemperature,
 		"borer_present" = H.has_brain_worms(),
-		"inaprovaline_amount" = REAGENT_VOLUME(H.reagents, /decl/reagent/inaprovaline),
-		"dexalin_amount" = REAGENT_VOLUME(H.reagents, /decl/reagent/dexalin),
-		"stoxin_amount" = REAGENT_VOLUME(H.reagents, /decl/reagent/soporific),
-		"bicaridine_amount" = REAGENT_VOLUME(H.reagents, /decl/reagent/bicaridine),
-		"dermaline_amount" = REAGENT_VOLUME(H.reagents, /decl/reagent/dermaline),
-		"thetamycin_amount" = REAGENT_VOLUME(H.reagents, /decl/reagent/thetamycin),
-		"blood_amount" = REAGENT_VOLUME(H.vessel, /decl/reagent/blood),
+		"inaprovaline_amount" = REAGENT_VOLUME(H.reagents, /singleton/reagent/inaprovaline),
+		"dexalin_amount" = REAGENT_VOLUME(H.reagents, /singleton/reagent/dexalin),
+		"stoxin_amount" = REAGENT_VOLUME(H.reagents, /singleton/reagent/soporific),
+		"bicaridine_amount" = REAGENT_VOLUME(H.reagents, /singleton/reagent/bicaridine),
+		"dermaline_amount" = REAGENT_VOLUME(H.reagents, /singleton/reagent/dermaline),
+		"thetamycin_amount" = REAGENT_VOLUME(H.reagents, /singleton/reagent/thetamycin),
+		"blood_amount" = REAGENT_VOLUME(H.vessel, /singleton/reagent/blood),
 		"disabilities" = H.sdisabilities,
 		"lung_ruptured" = H.is_lung_ruptured(),
 		"lung_rescued" = H.is_lung_rescued(),
@@ -722,7 +738,7 @@
 			lung_ruptured = "Lung ruptured."
 		if(e.status & ORGAN_SPLINTED)
 			splint = "Splinted."
-		if(e.is_dislocated())
+		if(ORGAN_IS_DISLOCATED(e))
 			dislocated = "Dislocated."
 		if(e.status & ORGAN_BLEEDING)
 			bled = "Bleeding."
@@ -741,18 +757,24 @@
 
 		if (e.implants.len)
 			var/unknown_body = 0
+			var/list/organic = list()
 			for(var/I in e.implants)
 				if(is_type_in_list(I,known_implants))
 					imp += "[I] implanted:"
+				else if(istype(I, /obj/effect/spider))
+					organic += I
 				else
 					unknown_body++
 			if(unknown_body)
 				imp += "Unknown body present:"
+			var/friends = length(organic)
+			if(friends)
+				imp += friends > 1 ? "Multiple abnormal organic bodies present:" : "Abnormal organic body present:"
 
 		if(!AN && !open && !infected && !imp)
 			AN = "None:"
 		if(!e.is_stump())
-			dat += "<td>[e.name]</td><td>[e.burn_dam]</td><td>[get_severity(e.brute_dam, TRUE)]</td><td>[robot][bled][AN][splint][open][infected][imp][dislocated][internal_bleeding][severed_tendon][lung_ruptured]</td>"
+			dat += "<td>[e.name]</td><td>[get_severity(e.burn_dam, TRUE)]</td><td>[get_severity(e.brute_dam, TRUE)]</td><td>[robot][bled][AN][splint][open][infected][imp][dislocated][internal_bleeding][severed_tendon][lung_ruptured]</td>"
 		else
 			dat += "<td>[e.name]</td><td>-</td><td>-</td><td>Not [e.is_stump() ? "Found" : "Attached Completely"]</td>"
 		dat += "</tr>"

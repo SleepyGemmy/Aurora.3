@@ -95,7 +95,7 @@
 				B.brainmob = null
 				brainmob.forceMove(src)
 				brainmob.container = src
-				brainmob.stat = CONSCIOUS
+				brainmob.set_stat(CONSCIOUS)
 				dead_mob_list -= brainmob //Update dem lists
 				living_mob_list += brainmob
 
@@ -116,7 +116,7 @@
 				set_cradle_state(STATE_NODIODES)
 			else if(I.iswelder())
 				var/obj/item/weldingtool/WT = I
-				if(WT.remove_fuel(0, user))
+				if(WT.use(0, user))
 					user.visible_message("<b>[user]</b> welds the two parts of the braincase together, permanently sealing \the [brainobj] inside.", SPAN_NOTICE("You weld the two parts of the braincase together, permanently sealing \the [brainobj] inside."))
 					to_chat(brainmob, SPAN_NOTICE("As the braincase comes online, you feel your sense of self ebbing away, your memories suppressed by the onboard software."))
 					set_cradle_state(STATE_SEALED)
@@ -127,7 +127,7 @@
 				return
 			else if(istype(I, /obj/item/surgery/circular_saw))
 				user.visible_message("<b>[user]</b> starts sawing \the [src] open...", SPAN_NOTICE("You start sawing \the [src] open, [SPAN_WARNING("this WILL destroy the brain inside")]."))
-				if(do_after(user, 3 SECONDS))
+				if(I.use_tool(src, user, 30, volume = 50))
 					user.visible_message("<b>[user]</b> saws \the [src] open, leaving \the [brainobj] a gory mess.", SPAN_NOTICE("You saw \the [src] open, leaving \the [brainobj] a gory mess."))
 					var/obj/item/organ/internal/brain/brain_holder = brainobj
 					transfer_mob_to_brain()
@@ -236,7 +236,7 @@
 /obj/item/device/mmi/radio_enabled/Initialize()
 	. = ..()
 	radio = new(src)//Spawns a radio inside the MMI.
-	radio.broadcasting = TRUE//So it's broadcasting from the start.
+	radio.set_broadcasting(TRUE) //So it's broadcasting from the start.
 
 //Allows the brain to toggle the radio functions.
 /obj/item/device/mmi/radio_enabled/verb/Toggle_Broadcasting()
@@ -249,8 +249,8 @@
 	if(brainmob.stat)//Only the brainmob will trigger these so no further check is necessary.
 		to_chat(brainmob, "Can't do that while incapacitated or dead.")
 
-	radio.broadcasting = radio.broadcasting==1 ? 0 : 1
-	to_chat(brainmob, SPAN_NOTICE("Radio is [radio.broadcasting==1 ? "now" : "no longer"] broadcasting."))
+	radio.set_broadcasting(!radio.get_broadcasting())
+	to_chat(brainmob, SPAN_NOTICE("Radio is [radio.get_broadcasting() ? "now" : "no longer"] broadcasting."))
 
 /obj/item/device/mmi/radio_enabled/verb/Toggle_Listening()
 	set name = "Toggle Listening"
@@ -262,8 +262,8 @@
 	if(brainmob.stat)
 		to_chat(brainmob, "Can't do that while incapacitated or dead.")
 
-	radio.listening = radio.listening==1 ? 0 : 1
-	to_chat(brainmob, SPAN_NOTICE("Radio is [radio.listening==1 ? "now" : "no longer"] receiving broadcast."))
+	radio.set_listening(!radio.get_listening())
+	to_chat(brainmob, SPAN_NOTICE("Radio is [radio.get_listening() ? "now" : "no longer"] receiving broadcast."))
 
 /obj/item/device/mmi/emp_act(severity)
 	if(!brainmob)
@@ -282,14 +282,14 @@
 	. = ..()
 	brainmob = new(src)
 	brainmob.add_language(LANGUAGE_EAL)
-	brainmob.stat = CONSCIOUS
+	brainmob.set_stat(CONSCIOUS)
 	brainmob.container = src
 	brainmob.silent = 0
 
 /obj/item/device/mmi/digital/transfer_identity(var/mob/living/carbon/H)
 	brainmob.dna = H.dna
 	brainmob.timeofhostdeath = H.timeofdeath
-	brainmob.stat = CONSCIOUS
+	brainmob.set_stat(CONSCIOUS)
 	if(H.mind)
 		H.mind.transfer_to(brainmob)
 

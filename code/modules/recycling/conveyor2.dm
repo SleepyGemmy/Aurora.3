@@ -7,7 +7,7 @@
 	icon_state = "conveyor0"
 	name = "conveyor belt"
 	desc = "A conveyor belt."
-	layer = 2			// so they appear under stuff
+	layer = 2.4			// so they appear above pipes but under doors, objects etc
 	anchored = 1
 	var/operating = 0	// 1 if running forward, -1 if backwards, 0 if off
 	var/operable = 1	// true if can operate (no broken segments in this belt run)
@@ -69,7 +69,7 @@
 
 	// machine process
 	// move items to the target location
-/obj/machinery/conveyor/machinery_process()
+/obj/machinery/conveyor/process()
 	if(stat & (BROKEN | NOPOWER))
 		return
 	if(!operating || conveying)
@@ -79,7 +79,7 @@
 		stat |= BROKEN
 		return
 
-	use_power(100)
+	use_power_oneoff(100)
 
 	var/turf/locturf = loc
 	var/list/items = locturf.contents - src

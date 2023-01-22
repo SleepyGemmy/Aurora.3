@@ -3,10 +3,11 @@
 	desc = "It's used to monitor rooms."
 	icon = 'icons/obj/monitors.dmi'
 	icon_state = "camera"
-	use_power = 2
+	use_power = POWER_USE_ACTIVE
 	idle_power_usage = 5
 	active_power_usage = 10
 	layer = 5
+	obj_flags = OBJ_FLAG_MOVES_UNSUPPORTED
 
 	var/list/network = list(NETWORK_STATION)
 	var/c_tag = null
@@ -66,7 +67,7 @@
 	wires = null
 	return ..()
 
-/obj/machinery/camera/machinery_process()
+/obj/machinery/camera/process()
 	if((stat & EMPED) && world.time >= affected_by_emp_until)
 		stat &= ~EMPED
 		cancelCameraAlarm()
@@ -102,7 +103,7 @@
 
 	..() //and give it the regular chance of being deleted outright
 
-/obj/machinery/camera/hitby(AM as mob|obj)
+/obj/machinery/camera/hitby(AM as mob|obj, var/speed = THROWFORCE_SPEED_DIVISOR)
 	..()
 	if (istype(AM, /obj))
 		var/obj/O = AM
@@ -260,7 +261,7 @@
 
 	//sparks
 	spark(loc, 5)
-	playsound(loc, /decl/sound_category/spark_sound, 50, 1)
+	playsound(loc, /singleton/sound_category/spark_sound, 50, 1)
 
 /obj/machinery/camera/proc/set_status(var/newstatus)
 	if (status != newstatus)
@@ -322,7 +323,7 @@
 	if(isXRay())
 		see = range(view_range, pos)
 	else
-		see = hear(view_range, pos)
+		see = get_hear(view_range, pos)
 	return see
 
 /atom/proc/auto_turn()
@@ -367,9 +368,9 @@
 	// Do after stuff here
 	to_chat(user, "<span class='notice'>You start to weld the [src]..</span>")
 	playsound(src.loc, 'sound/items/welder.ogg', 50, 1)
-	WT.eyecheck(user)
+	user.flash_act(FLASH_PROTECTION_MAJOR)
 	busy = 1
-	if(do_after(user, 100/WT.toolspeed))
+	if(WT.use_tool(src, user, 100, volume = 50))
 		busy = 0
 		if(!WT.isOn())
 			return 0

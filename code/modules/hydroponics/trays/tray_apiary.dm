@@ -68,7 +68,7 @@
 			angry_swarm(user)
 		else
 			to_chat(user, "<span class='notice'>You begin to dislodge the dead apiary from the tray.</span>")
-		if(do_after(user, 50/O.toolspeed))
+		if(O.use_tool(src, user, 50, volume = 50))
 			new hydrotray_type(src.loc)
 			new /obj/item/apiary(src.loc)
 			to_chat(user, "<span class='warning'>You dislodge the apiary from the tray.</span>")
@@ -89,8 +89,8 @@
 				angry_swarm(user)
 			else
 				to_chat(user, "<span class='notice'>You begin to harvest the honey.</span>")
-			if(do_after(user,50/O.toolspeed))
-				G.reagents.add_reagent(/decl/reagent/nutriment/honey,harvestable_honey)
+			if(O.use_tool(src, user, 50, volume = 50))
+				G.reagents.add_reagent(/singleton/reagent/nutriment/honey,harvestable_honey)
 				harvestable_honey = 0
 				to_chat(user, "<span class='notice'>You successfully harvest the honey.</span>")
 		else
@@ -107,7 +107,7 @@
 	else
 		return 0
 
-/obj/machinery/apiary/machinery_process()
+/obj/machinery/apiary/process()
 
 	if(swarming > 0)
 		swarming -= 1
@@ -233,7 +233,7 @@
 		health -= 15
 		var/obj/item/reagent_containers/food/snacks/honeycomb/H = new(src.loc)
 		if(toxic > 0)
-			H.reagents.add_reagent(/decl/reagent/toxin, toxic)
+			H.reagents.add_reagent(/singleton/reagent/toxin, toxic)
 
 	to_chat(usr, "<span class='notice'>You harvest the honeycomb from the hive. There is a wild buzzing!</span>")
 	angry_swarm(usr)

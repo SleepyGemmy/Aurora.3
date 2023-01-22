@@ -30,6 +30,31 @@
 		else
 			to_chat(src, "<span class ='notice'>You're already using that style.</span>")
 
+/mob/living/carbon/human/proc/adjust_headtails()
+	set name = "Adjust Headtails"
+	set desc = "Adjust your headtails."
+	set category = "IC"
+
+	if(!use_check_and_message())
+		to_chat(src, SPAN_WARNING("You can't adjust your headtails when you're incapacitated!"))
+		return
+
+	if(h_style)
+		var/datum/sprite_accessory/hair/hair_style = hair_styles_list[h_style]
+		var/selected_string
+		var/list/datum/sprite_accessory/hair/valid_hairstyles = list()
+		for(var/hair_string in hair_styles_list)
+			var/datum/sprite_accessory/hair/test = hair_styles_list[hair_string]
+			if(species.type in test.species_allowed)
+				valid_hairstyles.Add(hair_string)
+		selected_string = input("Select a new headtail style", "Your headtail style", hair_style) as null|anything in valid_hairstyles
+		if(selected_string && h_style != selected_string)
+			h_style = selected_string
+			regenerate_icons()
+			visible_message("<span class='notice'>[src] adjusts [src.get_pronoun("his")] headtails.</span>")
+		else
+			to_chat(src, "<span class ='notice'>You're already using that style.</span>")
+
 mob/living/carbon/human/proc/change_monitor()
 	set name = "Change IPC Screen"
 	set desc = "Change the display on your screen."
@@ -607,7 +632,7 @@ mob/living/carbon/human/proc/change_monitor()
 	visible_message("<span class='danger'>\The [src] shrieks!</span>")
 	playsound(src.loc, 'sound/species/revenant/grue_screech.ogg', 100, 1)
 	for (var/mob/living/carbon/human/T in hearers(4, src) - src)
-		if(T.protected_from_sound())
+		if(T.get_hearing_protection())
 			continue
 		if (T.get_hearing_sensitivity() == HEARING_VERY_SENSITIVE)
 			earpain(2, TRUE, 1)
@@ -804,7 +829,7 @@ mob/living/carbon/human/proc/change_monitor()
 	var/list/victims = list()
 
 	for (var/mob/living/carbon/human/T in hearers(4, src) - src)
-		if(T.protected_from_sound())
+		if(T.get_hearing_protection())
 			continue
 		if (T.get_hearing_sensitivity() == HEARING_VERY_SENSITIVE)
 			earpain(3, TRUE, 1)
@@ -812,7 +837,7 @@ mob/living/carbon/human/proc/change_monitor()
 			earpain(2, TRUE, 2)
 	
 	for (var/mob/living/carbon/human/T in hearers(2, src) - src)
-		if(T.protected_from_sound())
+		if(T.get_hearing_protection())
 			continue
 
 		to_chat(T, SPAN_DANGER("You hear an ear piercing shriek and feel your senses go dull!"))
@@ -870,7 +895,7 @@ mob/living/carbon/human/proc/change_monitor()
 			D.create_reagents(200)
 			if(!src)
 				return
-			D.reagents.add_reagent(/decl/reagent/fuel/napalm, 200)
+			D.reagents.add_reagent(/singleton/reagent/fuel/napalm, 200)
 			D.set_color()
 			D.set_up(my_target, rand(6,8), 1, 50)
 	return
@@ -915,7 +940,7 @@ mob/living/carbon/human/proc/change_monitor()
 			adjustBruteLoss(-10*O.amount)
 			adjustFireLoss(-10*O.amount)
 			if(!(species.flags & NO_BLOOD))
-				vessel.add_reagent(/decl/reagent/blood,20*O.amount, temperature = species.body_temperature)
+				vessel.add_reagent(/singleton/reagent/blood,20*O.amount, temperature = species.body_temperature)
 			qdel(O)
 			last_special = world.time + 50
 
@@ -1174,6 +1199,8 @@ mob/living/carbon/human/proc/change_monitor()
 		return
 	else
 		custom_emote(VISIBLE_MESSAGE, "flicks their tongue out.")
+
+	if(!src.loc) return
 
 	var/datum/gas_mixture/mixture = src.loc.return_air()
 	var/total_moles = mixture.total_moles

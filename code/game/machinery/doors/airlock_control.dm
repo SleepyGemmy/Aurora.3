@@ -165,6 +165,7 @@
 
 	anchored = 1
 	power_channel = ENVIRON
+	obj_flags = OBJ_FLAG_MOVES_UNSUPPORTED
 
 	var/id_tag
 	var/master_tag
@@ -195,7 +196,7 @@
 	radio_connection.post_signal(src, signal, range = AIRLOCK_CONTROL_RANGE, filter = RADIO_AIRLOCK)
 	flick("airlock_sensor_cycle", src)
 
-/obj/machinery/airlock_sensor/machinery_process()
+/obj/machinery/airlock_sensor/process()
 	if(on)
 		var/datum/gas_mixture/air_sample = return_air()
 		var/pressure = round(air_sample.return_pressure(),0.1)
@@ -242,6 +243,7 @@
 	icon = 'icons/obj/airlock_machines.dmi'
 	icon_state = "access_button_standby"
 	layer = OBJ_LAYER
+	obj_flags = OBJ_FLAG_MOVES_UNSUPPORTED
 
 	anchored = 1
 	power_channel = ENVIRON

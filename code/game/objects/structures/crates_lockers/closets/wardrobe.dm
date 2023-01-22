@@ -36,6 +36,10 @@
 	new /obj/item/clothing/shoes/jackboots/knee(src)
 	new /obj/item/clothing/shoes/jackboots/knee(src)
 	new /obj/item/clothing/shoes/jackboots/toeless(src)
+	new /obj/item/clothing/accessory/holster/waist(src)
+	new /obj/item/clothing/accessory/holster/waist(src)
+	new /obj/item/clothing/accessory/holster/waist(src)
+	new /obj/item/clothing/accessory/holster/waist(src)
 
 	return
 
@@ -163,21 +167,16 @@
 	new /obj/item/clothing/under/rank/atmospheric_technician/zavod(src)
 	new /obj/item/clothing/shoes/black(src)
 	new /obj/item/clothing/shoes/black(src)
-	new /obj/item/clothing/shoes/black(src)
 	new /obj/item/clothing/head/hardhat/red(src)
-	new /obj/item/clothing/head/hardhat/red(src)
-	new /obj/item/clothing/head/hardhat/red(src)
-	new /obj/item/clothing/head/hardhat/dblue(src)
-	new /obj/item/clothing/head/hardhat/dblue(src)
-	new /obj/item/clothing/head/hardhat/dblue(src)
+	new /obj/item/clothing/head/hardhat/green(src)
 	new /obj/item/clothing/head/beret/engineering(src)
-	new /obj/item/clothing/head/beret/engineering(src)
-	new /obj/item/clothing/head/beret/engineering(src)
+	new /obj/item/clothing/head/beret/corporate/heph(src)
+	new /obj/item/clothing/head/beret/corporate/zavod(src)
 	new /obj/item/clothing/head/bandana/atmos(src)
-	new /obj/item/clothing/head/bandana/atmos(src)
-	new /obj/item/clothing/head/bandana/atmos(src)
+	new /obj/item/clothing/suit/storage/hazardvest/green(src)
+	new /obj/item/clothing/suit/storage/hazardvest/red(src)
+	new /obj/item/clothing/suit/storage/hazardvest/blue/atmos(src)
 	return
-
 
 
 /obj/structure/closet/wardrobe/engineering_yellow
@@ -193,17 +192,20 @@
 	new /obj/item/clothing/shoes/orange(src)
 	new /obj/item/clothing/shoes/orange(src)
 	new /obj/item/clothing/shoes/orange(src)
-	new /obj/item/clothing/head/hardhat(src)
-	new /obj/item/clothing/head/hardhat(src)
-	new /obj/item/clothing/head/hardhat(src)
+	new /obj/item/clothing/head/hardhat/red(src)
+	new /obj/item/clothing/head/hardhat/red(src)
+	new /obj/item/clothing/head/hardhat/green(src)
+	new /obj/item/clothing/head/hardhat/green(src)
 	new /obj/item/clothing/head/beret/engineering(src)
 	new /obj/item/clothing/head/beret/engineering(src)
-	new /obj/item/clothing/head/beret/engineering(src)
-	new /obj/item/clothing/head/bandana/engineering(src)
+	new /obj/item/clothing/head/beret/corporate/heph(src)
+	new /obj/item/clothing/head/beret/corporate/zavod(src)
 	new /obj/item/clothing/head/bandana/engineering(src)
 	new /obj/item/clothing/head/bandana/engineering(src)
 	new /obj/item/clothing/suit/storage/toggle/highvis(src)
 	new /obj/item/clothing/suit/storage/toggle/highvis(src)
+	new /obj/item/clothing/suit/storage/hazardvest/green(src)
+	new /obj/item/clothing/suit/storage/hazardvest/red(src)
 
 
 /obj/structure/closet/wardrobe/white
@@ -245,7 +247,7 @@
 /obj/structure/closet/wardrobe/toxins_white/fill()
 	..()
 	new /obj/item/clothing/under/rank/scientist/zavod(src)
-	new /obj/item/clothing/under/rank/scientist/nt(src)
+	new /obj/item/clothing/under/rank/scientist(src)
 	new /obj/item/clothing/under/rank/scientist/zeng(src)
 	new /obj/item/clothing/suit/storage/toggle/labcoat(src)
 	new /obj/item/clothing/suit/storage/toggle/labcoat(src)
@@ -261,36 +263,21 @@
 	new /obj/item/clothing/head/bandana/science(src)
 	return
 
-/obj/structure/closet/wardrobe/machinist
-	name = "machinist wardrobe"
-	icon_door = "black"
-
-/obj/structure/closet/wardrobe/robotics_black/fill()
-	..()
-	new /obj/item/clothing/under/rank/machinist/orion(src)
-	new /obj/item/clothing/under/rank/machinist/heph(src)
-	new /obj/item/clothing/suit/storage/toggle/labcoat(src)
-	new /obj/item/clothing/suit/storage/toggle/labcoat(src)
-	new /obj/item/clothing/shoes/black(src)
-	new /obj/item/clothing/shoes/black(src)
-	new /obj/item/clothing/gloves/black(src)
-	new /obj/item/clothing/gloves/black(src)
-	return
-
-
 /obj/structure/closet/wardrobe/pharmacy_white
 	name = "pharmacy wardrobe"
 	icon_door = "white"
 
 /obj/structure/closet/wardrobe/pharmacy_white/fill()
 	..()
-	new /obj/item/clothing/under/rank/pharmacist/zeng(src)
-	new /obj/item/clothing/under/rank/pharmacist/nt(src)
-	new /obj/item/clothing/under/rank/pharmacist/pmc(src)
+	new /obj/item/storage/backpack/duffel/pharm(src)
+	new /obj/item/clothing/under/rank/medical/pharmacist/zeng(src)
+	new /obj/item/clothing/under/rank/medical/pharmacist(src)
+	new /obj/item/clothing/under/rank/medical/pharmacist/pmc(src)
 	new /obj/item/clothing/shoes/chemist(src)
 	new /obj/item/clothing/shoes/chemist(src)
-	new /obj/item/clothing/suit/storage/toggle/labcoat/pharmacist(src)
-	new /obj/item/clothing/suit/storage/toggle/labcoat/pharmacist(src)
+	new /obj/item/clothing/suit/storage/toggle/labcoat/nt(src)
+	new /obj/item/clothing/suit/storage/toggle/labcoat/zeng(src)
+	new /obj/item/clothing/suit/storage/toggle/labcoat/pmc(src)
 	return
 
 /obj/structure/closet/wardrobe/virology_white
@@ -314,9 +301,9 @@
 	..()
 	new /obj/item/clothing/under/rank/medical(src)
 	new /obj/item/clothing/under/rank/medical(src)
-	new /obj/item/clothing/under/rank/medical/blue(src)
-	new /obj/item/clothing/under/rank/medical/green(src)
-	new /obj/item/clothing/under/rank/medical/purple(src)
+	new /obj/item/clothing/under/rank/medical/surgeon/pmc(src)
+	new /obj/item/clothing/under/rank/medical/surgeon/idris(src)
+	new /obj/item/clothing/under/rank/medical/surgeon/zeng(src)
 	new /obj/item/clothing/shoes/medical(src)
 	new /obj/item/clothing/shoes/medical(src)
 	new /obj/item/clothing/suit/storage/toggle/labcoat(src)

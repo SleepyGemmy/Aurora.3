@@ -11,34 +11,6 @@
 	cane["white cane"] = /obj/item/cane/white
 	gear_tweaks += new /datum/gear_tweak/path(cane)
 
-/datum/gear/dice
-	display_name = "pack of dice"
-	path = /obj/item/storage/pill_bottle/dice
-
-/datum/gear/dicegaming
-	display_name = "pack of gaming dice"
-	path = /obj/item/storage/pill_bottle/dice/gaming
-
-/datum/gear/cards
-	display_name = "deck of cards"
-	path = /obj/item/deck/cards
-
-/datum/gear/tarot
-	display_name = "deck of tarot cards"
-	path = /obj/item/deck/tarot
-
-/datum/gear/holder
-	display_name = "card holder"
-	path = /obj/item/storage/card
-
-/datum/gear/cardemon_pack
-	display_name = "cardemon booster pack"
-	path = /obj/item/pack/cardemon
-
-/datum/gear/spaceball_pack
-	display_name = "spaceball booster pack"
-	path = /obj/item/pack/spaceball
-
 /datum/gear/flask
 	display_name = "flask"
 	path = /obj/item/reagent_containers/food/drinks/flask/barflask
@@ -112,7 +84,7 @@
 	coffeecups["Eridani coffee cup"] = /obj/item/reagent_containers/food/drinks/drinkingglass/newglass/coffeecup/eridani
 	coffeecups["Elyra coffee cup"] = /obj/item/reagent_containers/food/drinks/drinkingglass/newglass/coffeecup/elyra
 	coffeecups["Hegemony coffee cup"] = /obj/item/reagent_containers/food/drinks/drinkingglass/newglass/coffeecup/hegemony
-	coffeecups["Jargon coffee cup"] = /obj/item/reagent_containers/food/drinks/drinkingglass/newglass/coffeecup/jargon
+	coffeecups["Nralakk coffee cup"] = /obj/item/reagent_containers/food/drinks/drinkingglass/newglass/coffeecup/nralakk
 	coffeecups["NT coffee cup"] = /obj/item/reagent_containers/food/drinks/drinkingglass/newglass/coffeecup/nt
 	coffeecups["Hephaestus coffee cup"] = /obj/item/reagent_containers/food/drinks/drinkingglass/newglass/coffeecup/metal/hepht
 	coffeecups["Idris coffee cup"] = /obj/item/reagent_containers/food/drinks/drinkingglass/newglass/coffeecup/idris
@@ -152,11 +124,12 @@
 	..()
 	var/list/banners = list()
 	banners["banner, Stellar Corporate Conglomerate"] = /obj/item/flag/scc
-	banners["banner, SolGov"] = /obj/item/flag/sol
+	banners["banner, Sol Alliance"] = /obj/item/flag/sol
 	banners["banner, Dominia"] = /obj/item/flag/dominia
 	banners["banner, Elyra"] = /obj/item/flag/elyra
 	banners["banner, Hegemony"] = /obj/item/flag/hegemony
-	banners["banner, Jargon"] = /obj/item/flag/jargon
+	banners["banner, Nralakk"] = /obj/item/flag/nralakk
+	banners["banner, Traverse"] = /obj/item/flag/traverse
 	banners["banner, NanoTrasen"] = /obj/item/flag/nanotrasen
 	banners["banner, Eridani Fed"] = /obj/item/flag/eridani
 	banners["banner, Sedantis"] = /obj/item/flag/vaurca
@@ -174,6 +147,8 @@
 	banners["banner, Confederate States of Fisanduh"] = /obj/item/flag/fisanduh
 	banners["banner, Gadpathur"] = /obj/item/flag/gadpathur
 	banners["banner, Vysoka"] = /obj/item/flag/vysoka
+	banners["banner, Konyang"] = /obj/item/flag/konyang
+	banners["banner, Red Coalition"] = /obj/item/flag/red_coalition
 	gear_tweaks += new /datum/gear_tweak/path(banners)
 
 /datum/gear/standard
@@ -186,7 +161,7 @@
 	var/list/standards = list()
 	standards["standard, Strelitz"] = /obj/item/flag/strelitz
 	standards["standard, Volvalaad"] = /obj/item/flag/volvalaad
-	standards["standard, Kazkhz"] = /obj/item/flag/kazkhz
+	standards["standard, Kazhkz"] = /obj/item/flag/kazhkz
 	standards["standard, Caladius"] = /obj/item/flag/caladius
 	standards["standard, Zhao"] = /obj/item/flag/zhao
 	gear_tweaks += new /datum/gear_tweak/path(standards)
@@ -201,11 +176,12 @@
 	..()
 	var/list/flags = list()
 	flags["flag, Stellar Corporate Conglomerate"] = /obj/item/flag/scc/l
-	flags["flag, SolGov"] = /obj/item/flag/sol/l
+	flags["flag, Sol Alliance"] = /obj/item/flag/sol/l
 	flags["flag, Dominia"] = /obj/item/flag/dominia/l
 	flags["flag, Elyra"] = /obj/item/flag/elyra/l
 	flags["flag, Hegemony"] = /obj/item/flag/hegemony/l
-	flags["flag, Jargon"] = /obj/item/flag/jargon/l
+	flags["flag, Nralakk"] = /obj/item/flag/nralakk/l
+	flags["flag, Traverse"] = /obj/item/flag/traverse/l
 	flags["flag, NanoTrasen"] = /obj/item/flag/nanotrasen/l
 	flags["flag, Eridani Fed"] = /obj/item/flag/eridani/l
 	flags["flag, Sedantis"] = /obj/item/flag/vaurca/l
@@ -222,6 +198,8 @@
 	flags["flag, Confederate States of Fisanduh"] = /obj/item/flag/fisanduh/l
 	flags["flag, Gadpathur"] = /obj/item/flag/gadpathur/l
 	flags["flag, Vysoka"] = /obj/item/flag/vysoka/l
+	flags["flag, Konyang"] = /obj/item/flag/konyang/l
+	flags["flag, Red Coalition"] = /obj/item/flag/red_coalition/l
 	gear_tweaks += new /datum/gear_tweak/path(flags)
 
 /datum/gear/towel
@@ -234,51 +212,9 @@
 	path = /obj/item/reagent_containers/glass/rag/handkerchief
 	flags = GEAR_HAS_NAME_SELECTION | GEAR_HAS_DESC_SELECTION | GEAR_HAS_COLOR_SELECTION
 
-/datum/gear/gameboard
-	display_name = "holo board game"
-	path = /obj/item/board
-
-/datum/gear/battlemonsters
-	display_name = "battlemonsters starter deck"
-	path = /obj/item/battle_monsters/wrapped
-
-/datum/gear/squidplushie
-	display_name = "colourable squid plushie"
-	path = /obj/item/toy/plushie/squidcolour
-	flags = GEAR_HAS_NAME_SELECTION | GEAR_HAS_DESC_SELECTION | GEAR_HAS_COLOR_SELECTION
-
-/datum/gear/plushie
-	display_name = "plushie selection"
-	description = "A selection of plush toys."
-	path = /obj/item/toy/plushie
-
-/datum/gear/plushie/New()
-	..()
-	var/list/plushies = list()
-	plushies["plushie, nymph"] = /obj/item/toy/plushie/nymph
-	plushies["plushie, mouse"] = /obj/item/toy/plushie/mouse
-	plushies["plushie, kitten"] = /obj/item/toy/plushie/kitten
-	plushies["plushie, lizard"] = /obj/item/toy/plushie/lizard
-	plushies["plushie, spider"] = /obj/item/toy/plushie/spider
-	plushies["plushie, farwa"] = /obj/item/toy/plushie/farwa
-	plushies["plushie, bear"] = /obj/item/toy/plushie/bear
-	plushies["plushie, firefighter bear"] = /obj/item/toy/plushie/bearfire
-	plushies["plushie, random squid"] = /obj/item/toy/plushie/squid //if someone can figure out how to make color work with these, good luck lmao
-	plushies["plushie, bee"] = /obj/item/toy/plushie/bee
-	plushies["plushie, schlorrgo"] = /obj/item/toy/plushie/schlorrgo
-	plushies["plushie, cool schlorrgo"] = /obj/item/toy/plushie/coolschlorrgo
-	plushies["plushie, slime"] = /obj/item/toy/plushie/slime
-	plushies["plushie, penny"] = /obj/item/toy/plushie/pennyplush
-	plushies["plushie, greimorian"] = /obj/item/toy/plushie/greimorian
-	plushies["plushie, Axic"] = /obj/item/toy/plushie/axic
-	plushies["plushie, Qill"] = /obj/item/toy/plushie/qill
-	plushies["plushie, Xana"] = /obj/item/toy/plushie/xana
-	plushies["plushie, Aphy"] = /obj/item/toy/plushie/ipc
-	gear_tweaks += new /datum/gear_tweak/path(plushies)
-
 /datum/gear/comic
 	display_name = "comic selection"
-	description = "A selection of comics and manga from across the Spur."
+	description = "A selection of comics, manga, and magazines from across the Spur."
 	path = /obj/item/toy/comic
 
 /datum/gear/comic/New()
@@ -287,6 +223,15 @@
 	comics["comic book"] = /obj/item/toy/comic
 	comics["inspector 404 manga"] = /obj/item/toy/comic/inspector
 	comics["stormman manga"] = /obj/item/toy/comic/stormman
+	comics["outlandish tales magazine"] = /obj/item/toy/comic/outlandish_tales
+	comics["az'marian comic, issue 1"] = /obj/item/toy/comic/azmarian/issue_1
+	comics["az'marian comic, issue 2"] = /obj/item/toy/comic/azmarian/issue_2
+	comics["az'marian comic, issue 3"] = /obj/item/toy/comic/azmarian/issue_3
+	comics["az'marian comic, issue 4"] = /obj/item/toy/comic/azmarian/issue_4
+	comics["az'marian comic, issue 5"] = /obj/item/toy/comic/azmarian/issue_5
+	comics["az'marian comic, issue 6"] = /obj/item/toy/comic/azmarian/issue_6
+	comics["az'marian comic, issue 7"] = /obj/item/toy/comic/azmarian/issue_7
+	comics["az'marian comic, issue 8"] = /obj/item/toy/comic/azmarian/issue_8
 	gear_tweaks += new /datum/gear_tweak/path(comics)
 
 /datum/gear/toothpaste
@@ -325,8 +270,8 @@
 
 /datum/gear/gadbook
 	display_name = "gadpathurian morale manual"
-	path = /obj/item/device/litanybook/gadpathur
-	origin_restriction = list(/decl/origin_item/origin/gadpathur)
+	path = /obj/item/device/versebook/gadpathur
+	origin_restriction = list(/singleton/origin_item/origin/gadpathur)
 
 /datum/gear/aurora_miniature
 	display_name = "aurora miniature"

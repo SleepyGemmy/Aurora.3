@@ -6,7 +6,7 @@ var/datum/controller/subsystem/lighting/SSlighting
 /datum/controller/subsystem/lighting
 	name = "Lighting"
 	wait = LIGHTING_INTERVAL
-	flags = SS_FIRE_IN_LOBBY
+	runlevels = RUNLEVELS_DEFAULT | RUNLEVEL_LOBBY
 
 	priority = SS_PRIORITY_LIGHTING
 	init_order = SS_INIT_LIGHTING
@@ -52,8 +52,10 @@ var/datum/controller/subsystem/lighting/SSlighting
 
 /datum/controller/subsystem/lighting/ExplosionStart()
 	force_queued = TRUE
+	suspend()
 
 /datum/controller/subsystem/lighting/ExplosionEnd()
+	wake()
 	if (!force_override)
 		force_queued = FALSE
 
@@ -74,6 +76,11 @@ var/datum/controller/subsystem/lighting/SSlighting
 	for (var/zlevel = 1 to world.maxz)
 		for (thing in Z_ALL_TURFS(zlevel))
 			T = thing
+			if(config.starlight)
+				var/turf/space/S = T
+				if(istype(S) && S.use_starlight)
+					S.update_starlight()
+
 			if (!T.dynamic_lighting)
 				continue
 

@@ -6,10 +6,10 @@
 	icon = 'icons/obj/stationobjs.dmi'
 	icon_state = "recharger_off"
 	anchored = 1
-	use_power = 1
 	idle_power_usage = 6
 	active_power_usage = 45 KILOWATTS
 	pass_flags = PASSTABLE
+	obj_flags = OBJ_FLAG_MOVES_UNSUPPORTED
 	var/charging_efficiency = 1.3
 	//Entropy. The charge put into the cell is multiplied by this
 	var/obj/item/charging
@@ -22,7 +22,9 @@
 		/obj/item/computer_hardware/battery_module,
 		/obj/item/device/flashlight/survival,
 		/obj/item/clothing/mask/smokable/ecig,
-		/obj/item/inductive_charger/handheld
+		/obj/item/inductive_charger/handheld,
+		/obj/item/auto_cpr,
+		/obj/item/device/personal_shield
 	)
 	var/icon_state_charged = "recharger100"
 	var/icon_state_charging = "recharger"
@@ -102,14 +104,14 @@
 				remove_bar(thing, chargebars[thing])
 		update_icon()
 
-/obj/machinery/recharger/machinery_process()
+/obj/machinery/recharger/process()
 	if(stat & (NOPOWER|BROKEN) || !anchored)
-		update_use_power(0)
+		update_use_power(POWER_USE_OFF)
 		icon_state = icon_state_idle
 		return
 
 	if(!charging)
-		update_use_power(1)
+		update_use_power(POWER_USE_IDLE)
 		icon_state = icon_state_idle
 	else
 		var/obj/item/cell/cell = charging.get_cell()
@@ -128,10 +130,10 @@
 					icon_state = icon_state_charging + "80"
 				C.give(active_power_usage*CELLRATE*charging_efficiency)
 
-				update_use_power(2)
+				update_use_power(POWER_USE_ACTIVE)
 			else
 				icon_state = icon_state_charged
-				update_use_power(1)
+				update_use_power(POWER_USE_IDLE)
 
 			if (chargebars)
 				for (var/thing in chargebars)

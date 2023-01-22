@@ -245,9 +245,6 @@
 	if(!mob.canmove || mob.paralysis)
 		return
 
-	//if(istype(mob.loc, /turf/space) || (mob.flags & NOGRAV))
-	//	if(!mob.Process_Spacemove(0))	return 0
-
 	if(!mob.lastarea)
 		mob.lastarea = get_area(mob.loc)
 
@@ -323,6 +320,12 @@
 
 		move_delay += tally
 
+		if(mob_is_human && mob.lying)
+			var/mob/living/carbon/human/H = mob
+			var/crawl_tally = H.get_crawl_tally()
+			if(crawl_tally >= 120)
+				return FALSE
+
 		var/tickcomp = 0 //moved this out here so we can use it for vehicles
 		if(config.Tickcomp)
 			// move_delay -= 1.3 //~added to the tickcomp calculation below
@@ -336,7 +339,8 @@
 		//Wheelchair pushing goes here for now.
 		//TODO: Fuck wheelchairs.
 		if(istype(mob.pulledby, /obj/structure/bed/stool/chair/office/wheelchair) || istype(mob.pulledby, /obj/structure/janitorialcart))
-			move_delay += 1
+			var/obj/structure/S = mob.pulledby
+			move_delay += S.slowdown
 			return mob.pulledby.relaymove(mob, direct)
 
 		var/old_loc = mob.loc
@@ -375,6 +379,29 @@
 		var/atom/O = mob.loc
 		return O.relaymove(mob, direct)
 
+/mob/living/carbon/human/proc/get_crawl_tally()
+	var/obj/item/organ/external/rhand = organs_by_name[BP_R_HAND]
+	. += limb_check(rhand)
+
+	var/obj/item/organ/external/lhand = organs_by_name[BP_L_HAND]
+	. += limb_check(lhand)
+
+	var/obj/item/organ/external/rfoot = organs_by_name[BP_R_FOOT]
+	. += limb_check(rfoot)
+
+	var/obj/item/organ/external/lfoot = organs_by_name[BP_L_FOOT]
+	. += limb_check(lfoot)
+
+// Checks status of limb, returns an amount to
+/mob/living/carbon/human/proc/limb_check(var/obj/item/organ/external/limb)
+	if(!limb) // Limb is null, thus missing.
+		return 30
+	else if(!limb.is_usable() || limb.is_broken()) // You can't use the limb, but it's still there to maneuvre yourself
+		return 15
+	else
+		return 0
+
+
 /mob/proc/SelfMove(turf/n, direct)
 	return Move(n, direct)
 
@@ -407,7 +434,7 @@
 			move_delay = 1 + world.time
 			var/turf/T = get_step(use_mob, direct)
 			for(var/obj/structure/window/W in T)
-				if(istype(W, /obj/structure/window/phoronbasic) || istype(W, /obj/structure/window/phoronreinforced))
+				if(istype(W, /obj/structure/window/borosilicate) || istype(W, /obj/structure/window/borosilicate/reinforced))
 					if(W.is_full_window())
 						to_chat(src, SPAN_WARNING("\The [W] obstructs your movement!"))
 						return
@@ -428,7 +455,7 @@
 						L.verbs.Add(/mob/living/carbon/proc/echo_eject)
 					BS.mind.transfer_to(D)
 					D.echo = 1
-					D.stat = CONSCIOUS
+					D.set_stat(CONSCIOUS)
 					D.gestalt = L
 					D.sync_languages(D.gestalt)
 					D.update_verbs()
@@ -472,22 +499,21 @@
 	return -1
 
 //Checks if a mob has solid ground to stand on
-//If there's no gravity then there's no up or down so naturally you can't stand on anything.
+//If there's no gravity then there's no up or down so naturally you can't stand on anything, unless you have grip.
 //For the same reason lattices in space don't count - those are things you grip, presumably.
 /mob/proc/check_solid_ground()
 	var/turf/T = get_turf(src)
 
 	if (!T) // nullspace so sure, have gravity.
-		return 1
-	else if (istype(T, /turf/space))
-		return 0
+		return TRUE
+	else if(T.is_hole)
+		return FALSE
 
 	var/area/A = T.loc
+	if (!A.has_gravity() && !Check_Shoegrip())
+		return FALSE
 
-	if (!A.has_gravity())
-		return 0
-
-	return 1
+	return TRUE
 
 
 /mob/proc/Check_Dense_Object() //checks for anything to push off in the vicinity. also handles magboots on gravity-less floors tiles

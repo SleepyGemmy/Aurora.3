@@ -225,7 +225,7 @@
 		to_chat(src, SPAN_WARNING("You don't have enough chemicals!"))
 		return
 
-	var/list/choices = list("Inaprovaline" = /decl/reagent/inaprovaline, "Bicaridine" = /decl/reagent/bicaridine, "Kelotane" = /decl/reagent/kelotane, "Dylovene" = /decl/reagent/dylovene, "Hyperzine" = /decl/reagent/hyperzine, "Peridaxon" = /decl/reagent/peridaxon, "Mortaphenyl" = /decl/reagent/mortaphenyl, "Neurapan" = /decl/reagent/mental/neurapan)
+	var/list/choices = list("Inaprovaline" = /singleton/reagent/inaprovaline, "Bicaridine" = /singleton/reagent/bicaridine, "Kelotane" = /singleton/reagent/kelotane, "Dylovene" = /singleton/reagent/dylovene, "Hyperzine" = /singleton/reagent/hyperzine, "Peridaxon" = /singleton/reagent/peridaxon, "Mortaphenyl" = /singleton/reagent/mortaphenyl, "Neurapan" = /singleton/reagent/mental/neurapan)
 	var/chem = input("Select a chemical to secrete.", "Chemicals") as null|anything in choices
 
 	if(!chem || chemicals < 20 || !host || controlling || !src || stat) //Sanity check.
@@ -393,7 +393,7 @@
 		verbs -= /mob/living/carbon/proc/spawn_larvae
 
 	else
-		to_chat(src, SPAN_DANGER("Something has gone terribly wrong, as your host's brain does not seem to contain you. Make a Github report and ahelp to get out."))
+		to_chat(src, SPAN_DANGER("Something has gone terribly wrong, as your host's brain does not seem to contain you. Make a GitHub report and ahelp to get out."))
 
 //Brain slug proc for tormenting the host.
 /mob/living/carbon/proc/punish_host()

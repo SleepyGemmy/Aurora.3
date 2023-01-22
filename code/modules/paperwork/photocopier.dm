@@ -5,7 +5,6 @@
 	var/insert_anim = "photocopier_scan"
 	anchored = 1
 	density = 1
-	use_power = 1
 	idle_power_usage = 30
 	active_power_usage = 200
 	power_channel = EQUIP
@@ -61,7 +60,7 @@ VUEUI_MONITOR_VARS(/obj/machinery/photocopier, photocopiermonitor)
 			if(!c_type) // if there's something that can't be copied
 				break
 
-			use_power(active_power_usage)
+			use_power_oneoff(active_power_usage)
 		SSvueui.check_uis_for_change(src)
 	else if(href_list["remove"])
 		if(copyitem)
@@ -107,7 +106,7 @@ VUEUI_MONITOR_VARS(/obj/machinery/photocopier, photocopiermonitor)
 		if(toner <= 10) //allow replacing when low toner is affecting the print darkness
 			to_chat(user, SPAN_NOTICE("You insert \the [O] into \the [src]."))
 			flick("photocopier_toner", src)
-			playsound(loc, /decl/sound_category/switch_sound, 50, 1)
+			playsound(loc, /singleton/sound_category/switch_sound, 50, 1)
 			var/obj/item/device/toner/T = O
 			toner += T.toner_amount
 			user.drop_from_inventory(O,get_turf(src))

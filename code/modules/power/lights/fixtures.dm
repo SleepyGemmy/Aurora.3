@@ -11,13 +11,15 @@
 	var/base_state = "tube"		// base description and icon_state
 	icon_state = "tube_empty"
 	desc = "A lighting fixture."
+	desc_info = "Use grab intent when interacting with a working light to take it out of its fixture."
 	anchored = TRUE
 	layer = 5  					// They were appearing under mobs which is a little weird - Ostaf
-	use_power = 2
+	use_power = POWER_USE_ACTIVE
 	idle_power_usage = 2
 	active_power_usage = 20
 	power_channel = LIGHT //Lights are calc'd via area so they dont need to be in the machine list
 	gfi_layer_rotation = GFI_ROTATION_DEFDIR
+	obj_flags = OBJ_FLAG_MOVES_UNSUPPORTED
 	var/brightness_range = 8	// luminosity when on, also used in power calculation
 	var/brightness_power = 0.45
 	var/night_brightness_range = 6
@@ -54,6 +56,7 @@
 		LIGHT_MODE_RED = LIGHT_COLOR_EMERGENCY,
 		LIGHT_MODE_DELTA = LIGHT_COLOR_ORANGE
 	)
+	init_flags = 0
 
 /obj/machinery/light/skrell
 	base_state = "skrell"
@@ -111,7 +114,7 @@
 	supports_nightmode = FALSE
 
 /obj/machinery/light/spot/weak
-	name = "exterior spotlight"
+	name = "low-intensity spotlight"
 	brightness_range = 12
 	brightness_power = 1.2
 
@@ -219,24 +222,29 @@
 				stat |= BROKEN
 				set_light(0)
 		else
-			use_power = 2
-			active_power_usage = light_range * LIGHTING_POWER_FACTOR
+			update_use_power(POWER_USE_ACTIVE)
+			change_power_consumption(light_range * LIGHTING_POWER_FACTOR, POWER_USE_ACTIVE)
 			if (supports_nightmode && nightmode)
 				set_light(night_brightness_range, night_brightness_power, brightness_color)
 			else
 				set_light(brightness_range, brightness_power, brightness_color)
 	else if (has_emergency_power(LIGHT_EMERGENCY_POWER_USE) && !(stat & POWEROFF))
-		use_power = 1
+		update_use_power(POWER_USE_IDLE)
 		emergency_mode = TRUE
 		var/new_power = round(max(0.5, 0.75 * (cell.charge / cell.maxcharge)), 0.1)
 		set_light(brightness_range * 0.25, new_power, LIGHT_COLOR_EMERGENCY)
 	else
-		use_power = 1
+		update_use_power(POWER_USE_IDLE)
 		set_light(0)
 
 	update_icon()
 
-	active_power_usage = ((light_range * light_power) * 10)
+	change_power_consumption((light_range * light_power) * 10, POWER_USE_ACTIVE)
+
+	if((status == LIGHT_BROKEN) || emergency_mode || (cell && !cell.fully_charged() && has_power()))
+		START_PROCESSING_MACHINE(src, MACHINERY_PROCESS_SELF)
+	else if(processing_flags)
+		STOP_PROCESSING_MACHINE(src, MACHINERY_PROCESS_SELF)
 
 /obj/machinery/light/proc/broken_sparks()
 	if(world.time > next_spark && !(stat & POWEROFF) && has_power())
@@ -244,11 +252,14 @@
 		next_spark = world.time + 1 MINUTE + (rand(-15, 15) SECONDS)
 
 // ehh
-/obj/machinery/light/machinery_process()
-	if (cell && cell.charge != cell.maxcharge && has_power())
-		cell.charge = min(cell.maxcharge, cell.charge + 0.2)
+/obj/machinery/light/process()
+	if (cell && has_power())
+		cell.give(0.2)
+		if(cell.fully_charged())
+			return PROCESS_KILL
 	if (emergency_mode && !use_emergency_power(LIGHT_EMERGENCY_POWER_USE))
 		update(FALSE)
+		return PROCESS_KILL
 	if(status == LIGHT_BROKEN)
 		broken_sparks()
 
@@ -413,6 +424,7 @@
 		user.visible_message(SPAN_WARNING("\The [user] hits \the [src], but it doesn't break."), SPAN_WARNING("You hit \the [src], but it doesn't break."), SPAN_WARNING("You hear something hitting against glass."))
 
 /obj/machinery/light/bullet_act(obj/item/projectile/P, def_zone)
+	bullet_ping(P)
 	shatter()
 
 // returns whether this light has power
@@ -475,6 +487,9 @@
 				H.visible_message(SPAN_WARNING("\The [user] completely shatters \the [src]!"), SPAN_WARNING("You shatter \the [src] completely!"), SPAN_WARNING("You hear the tinkle of breaking glass."))
 				shatter()
 				return
+
+	if(user.a_intent != I_GRAB && status == LIGHT_OK)
+		return
 
 	// create a light tube/bulb item and put it in the user's hand
 	if(inserted_light)

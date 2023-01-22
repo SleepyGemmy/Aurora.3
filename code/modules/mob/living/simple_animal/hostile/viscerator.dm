@@ -4,7 +4,7 @@
 	icon = 'icons/mob/npc/aibots.dmi'
 	icon_state = "viscerator_attack"
 	icon_living = "viscerator_attack"
-	pass_flags = PASSTABLE
+	pass_flags = PASSTABLE|PASSRAILING
 	health = 15
 	maxHealth = 15
 	melee_damage_lower = 10
@@ -57,7 +57,7 @@
 		apply_damage(5)
 
 /mob/living/simple_animal/hostile/viscerator/lube
-	reagents_to_add = list(/decl/reagent/lube = 30)
+	reagents_to_add = list(/singleton/reagent/lube = 30)
 
 /mob/living/simple_animal/hostile/viscerator/lube/death()
 	reagents.splash(get_turf(src), 30)

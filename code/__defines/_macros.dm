@@ -2,6 +2,8 @@
 #define CLAMP01(x) 		(Clamp(x, 0, 1))
 #define JOINTEXT(X) jointext(X, null)
 #define list_find(L, needle, LIMITS...) L.Find(needle, LIMITS)
+#define hex2num(hex) text2num(hex, 16)
+#define num2hex(num, pad) num2text(num, pad, 16)
 
 #define span(class, text) ("<span class='[class]'>" + text + "</span>")
 #define SPAN_NOTICE(X) ("<span class='notice'>" + X + "</span>")
@@ -18,6 +20,8 @@
 #define SPAN_SUBTLE(X) ("<span class='subtle'>" + X + "</span>")
 #define SPAN_SOGHUN(X) ("<span class='soghun'>" + X + "</span>")
 #define SPAN_VOTE(X) ("<span class='vote'>" + X + "</span>")
+
+#define SPAN_HIGHDANGER(X) (FONT_LARGE(SPAN_DANGER(X)))
 
 #define FONT_SIZE_SMALL 1
 #define FONT_SIZE_NORMAL 2
@@ -50,6 +54,8 @@
 
 #define isbrain(A) istype(A, /mob/living/carbon/brain)
 
+#define isvirtualmob(A) istype(A, /mob/abstract/observer/virtual)
+
 #define iscarbon(A) istype(A, /mob/living/carbon)
 
 #define iscorgi(A) istype(A, /mob/living/simple_animal/corgi)
@@ -69,6 +75,8 @@
 #define isobj(A) istype(A, /obj)
 
 #define isspace(A) istype(A, /area/space)
+
+#define isspaceturf(A) istype(A, /turf/space)
 
 #define isobserver(A) istype(A, /mob/abstract/observer)
 
@@ -123,3 +131,15 @@
 #define isdatum(target) istype(target, /datum)
 #define isitem(D) istype(D, /obj/item)
 #define islist(D) istype(D, /list)
+
+// Insert an object A into a sorted list using cmp_proc (/code/_helpers/cmp.dm) for comparison.
+#define ADD_SORTED(list, A, cmp_proc) if(!list.len) {list.Add(A)} else {list.Insert(FindElementIndex(A, list, cmp_proc), A)}
+
+/// Right-shift of INT by BITS
+#define SHIFTR(INT, BITS) ((INT) >> (BITS))
+
+/// Left-shift of INT by BITS
+#define SHIFTL(INT, BITS) ((INT) << (BITS))
+
+/// Convenience define for nth-bit flags, 0-indexed
+#define FLAG(BIT) SHIFTL(1, BIT)

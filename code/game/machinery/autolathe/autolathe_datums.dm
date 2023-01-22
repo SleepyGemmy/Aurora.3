@@ -100,7 +100,7 @@
 	category = "General"
 
 /datum/autolathe/recipe/radio_bounced
-	name = "station bounced radio"
+	name = "shortwave radio"
 	path = /obj/item/device/radio/off
 	category = "General"
 
@@ -130,6 +130,12 @@
 /datum/autolathe/recipe/rods
 	name = "metal rods"
 	path = /obj/item/stack/rods
+	category = "General"
+	is_stack = 1
+
+/datum/autolathe/recipe/barbed_wire
+	name = "barbed wire"
+	path = /obj/item/stack/barbed_wire
 	category = "General"
 	is_stack = 1
 
@@ -408,6 +414,11 @@
 	path = /obj/item/device/destTagger
 	category = "General"
 
+/datum/autolathe/recipe/cratescanner
+	name = "crate contents scanner"
+	path = /obj/item/device/cratescanner
+	category = "General"
+
 /datum/autolathe/recipe/debugger
 	name = "debugger"
 	path = /obj/item/device/debugger
@@ -493,9 +504,21 @@
 	hidden = 1
 	category = "Arms and Ammunition"
 
+/datum/autolathe/recipe/magazine_carbinepolymer
+	name = "ammunition (5.56mm, polymer)"
+	path = /obj/item/ammo_magazine/a556/polymer
+	hidden = 1
+	category = "Arms and Ammunition"
+
 /datum/autolathe/recipe/magazine_smallcarbine
 	name = "ammunition (5.56mm, small)"
 	path = /obj/item/ammo_magazine/a556/carbine
+	hidden = 1
+	category = "Arms and Ammunition"
+
+/datum/autolathe/recipe/magazine_smallcarbinepolymer
+	name = "ammunition (5.56mm, small polymer)"
+	path = /obj/item/ammo_magazine/a556/carbine/polymer
 	hidden = 1
 	category = "Arms and Ammunition"
 

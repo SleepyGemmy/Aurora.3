@@ -6,7 +6,6 @@
 	layer = 2.9
 	anchored = 1
 	density = 1
-	use_power = 1
 	idle_power_usage = 10
 	var/typeofcandy = "gumballs"
 	var/initialicon = "gumball"
@@ -20,7 +19,7 @@
 	. = ..()
 
 
-/obj/machinery/gumballmachine/machinery_process()
+/obj/machinery/gumballmachine/process()
 	if(broken)
 		return
 	else
@@ -98,7 +97,7 @@
 
 /obj/machinery/gumballmachine/proc/smashgumball()
 	icon_state = "[initialicon]_broken"
-	playsound(get_turf(src), /decl/sound_category/glass_break_sound, 75, 1)
+	playsound(get_turf(src), /singleton/sound_category/glass_break_sound, 75, 1)
 	if(amountleft)
 		var/amountleftinside = amountleft
 		for(var/i = 1;i<=amountleftinside,i++)

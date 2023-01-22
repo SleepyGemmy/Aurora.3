@@ -137,7 +137,7 @@
 
 		to_chat(owner, "<span class='notice'>\The [src] activates, releasing a stream of chemicals into your veins!</span>")
 
-		owner.reagents.add_reagent(/decl/reagent/adrenaline, 15)
+		owner.reagents.add_reagent(/singleton/reagent/adrenaline, 15)
 
 /obj/item/organ/internal/augment/venomous_rest
 	name = "venomous rest implant"
@@ -156,9 +156,9 @@
 		return FALSE
 
 	if(owner.reagents)
-		owner.reagents.add_reagent(/decl/reagent/inaprovaline, 10)
-		owner.reagents.add_reagent(/decl/reagent/tricordrazine, 10)
-		owner.reagents.add_reagent(/decl/reagent/soporific, 15)
+		owner.reagents.add_reagent(/singleton/reagent/inaprovaline, 10)
+		owner.reagents.add_reagent(/singleton/reagent/tricordrazine, 10)
+		owner.reagents.add_reagent(/singleton/reagent/soporific, 15)
 		take_damage(15)
 		to_chat(owner, "<span class='notice'>\The [src] activates, releasing a stream of chemicals into your veins!</span>")
 
@@ -320,6 +320,7 @@
 
 /obj/item/pickaxe/drill/integrated
 	name = "integrated mining drill"
+	desc = "A integrated mining drill that is installed on the hand of the user, it can retract at the user's command."
 	icon_state = "integrateddrill"
 	item_state = "integrateddrill"
 

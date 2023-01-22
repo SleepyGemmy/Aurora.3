@@ -39,38 +39,39 @@
 	if(prob(50))
 		new /obj/item/storage/backpack/medic(src)
 	else
-		new /obj/item/storage/backpack/satchel_med(src)
+		new /obj/item/storage/backpack/satchel/med(src)
+	new /obj/item/storage/backpack/duffel/med(src)
 	new /obj/item/clothing/head/nursehat (src)
 	switch(pick("blue", "green", "purple"))
 		if ("blue")
-			new /obj/item/clothing/under/rank/medical/blue(src)
-			new /obj/item/clothing/head/surgery/blue(src)
+			new /obj/item/clothing/under/rank/medical/surgeon/pmc(src)
+			new /obj/item/clothing/head/surgery/pmc(src)
 		if ("green")
-			new /obj/item/clothing/under/rank/medical/green(src)
-			new /obj/item/clothing/head/surgery/green(src)
+			new /obj/item/clothing/under/rank/medical/surgeon/idris(src)
+			new /obj/item/clothing/head/surgery/idris(src)
 		if ("purple")
-			new /obj/item/clothing/under/rank/medical/purple(src)
-			new /obj/item/clothing/head/surgery/purple(src)
+			new /obj/item/clothing/under/rank/medical/surgeon/zeng(src)
+			new /obj/item/clothing/head/surgery/zeng(src)
 	switch(pick("blue", "green", "purple"))
 		if ("blue")
-			new /obj/item/clothing/under/rank/medical/blue(src)
-			new /obj/item/clothing/head/surgery/blue(src)
+			new /obj/item/clothing/under/rank/medical/surgeon/pmc(src)
+			new /obj/item/clothing/head/surgery/pmc(src)
 		if ("green")
-			new /obj/item/clothing/under/rank/medical/green(src)
-			new /obj/item/clothing/head/surgery/green(src)
+			new /obj/item/clothing/under/rank/medical/surgeon/idris(src)
+			new /obj/item/clothing/head/surgery/idris(src)
 		if ("purple")
-			new /obj/item/clothing/under/rank/medical/purple(src)
-			new /obj/item/clothing/head/surgery/purple(src)
+			new /obj/item/clothing/under/rank/medical/surgeon/zeng(src)
+			new /obj/item/clothing/head/surgery/zeng(src)
 	new /obj/item/clothing/suit/storage/toggle/labcoat(src)
-	new /obj/item/clothing/suit/storage/toggle/fr_jacket(src)
+	new /obj/item/clothing/suit/storage/toggle/labcoat/pmc(src)
+	new /obj/item/clothing/suit/storage/toggle/labcoat/idris(src)
+	new /obj/item/clothing/suit/storage/toggle/labcoat/zeng(src)
+	new /obj/item/clothing/head/headmirror
 	new /obj/item/clothing/shoes/medical(src)
 	new /obj/item/device/radio/headset/headset_med(src)
 	new /obj/item/device/radio/headset/headset_med/alt(src)
 	new /obj/item/clothing/glasses/hud/health/aviator(src)
 	new /obj/item/clothing/glasses/eyepatch/hud/medical(src)
-	new /obj/item/clothing/suit/storage/medical_chest_rig(src)
-	new /obj/item/clothing/suit/storage/medical_chest_rig/first_responder(src)
-	new /obj/item/clothing/head/hardhat/first_responder(src)
 
 /obj/structure/closet/secure_closet/medical_fr
 	name = "first responder's locker"
@@ -80,22 +81,21 @@
 
 /obj/structure/closet/secure_closet/medical_fr/fill()
 	..()
-	new /obj/item/storage/backpack/satchel_med(src)
+	new /obj/item/storage/backpack/satchel/med(src)
 	new /obj/item/storage/backpack/duffel/med(src)
 	new /obj/item/clothing/head/hardhat/first_responder(src)
 	new /obj/item/device/radio/headset/headset_med(src)
 	new /obj/item/clothing/glasses/hud/health(src)
-	new /obj/item/storage/backpack/medic/first_responder(src)
+	new /obj/item/storage/backpack/medic(src)
 	new /obj/item/clothing/suit/storage/medical_chest_rig(src)
-	new /obj/item/clothing/suit/storage/medical_chest_rig/first_responder(src)
-	new /obj/item/clothing/under/rank/medical/first_responder/nt(src)
+	new /obj/item/clothing/under/rank/medical/first_responder(src)
 	new /obj/item/clothing/under/rank/medical/first_responder/zeng(src)
 	new /obj/item/clothing/under/rank/medical/first_responder/pmc(src)
 	new /obj/item/clothing/shoes/jackboots(src)
 	new /obj/item/device/flashlight/pen(src)
 	new /obj/item/clothing/accessory/stethoscope(src)
 	new /obj/item/storage/belt/medical/first_responder(src)
-	new /obj/item/device/gps(src)
+	new /obj/item/device/gps/medical(src)
 	new /obj/item/reagent_containers/hypospray(src)
 	new /obj/item/taperoll/medical(src)
 	new /obj/item/device/radio/med(src)
@@ -104,7 +104,9 @@
 	new /obj/item/clothing/mask/gas/alt(src)
 	new /obj/item/clothing/mask/gas/half(src)
 	new /obj/item/auto_cpr(src)
-	new /obj/item/clothing/suit/storage/toggle/fr_jacket/alt(src)
+	new /obj/item/clothing/suit/storage/toggle/fr_jacket(src)
+	new /obj/item/clothing/suit/storage/toggle/fr_jacket/zeng(src)
+	new /obj/item/clothing/suit/storage/toggle/fr_jacket/pmc(src)
 
 /obj/structure/closet/secure_closet/CMO
 	name = "chief medical officer's locker"
@@ -115,9 +117,8 @@
 	if(prob(50))
 		new /obj/item/storage/backpack/medic(src)
 	else
-		new /obj/item/storage/backpack/satchel_med(src)
-	new /obj/item/clothing/suit/bio_suit/cmo(src)
-	new /obj/item/clothing/head/bio_hood/cmo(src)
+		new /obj/item/storage/backpack/satchel/med(src)
+	new /obj/item/storage/backpack/duffel/med(src)
 	new /obj/item/clothing/shoes/medical(src)
 	new /obj/item/clothing/under/rank/chief_medical_officer(src)
 	new /obj/item/clothing/gloves/latex/nitrile(src)
@@ -132,6 +133,8 @@
 	new /obj/item/clothing/glasses/hud/health/aviator(src)
 	new /obj/item/storage/box/fancy/keypouch/med(src)
 	new /obj/item/device/advanced_healthanalyzer(src)
+	new /obj/item/gun/energy/disruptorpistol/miniature(src)
+	new /obj/item/clothing/accessory/holster/waist(src)
 
 /obj/structure/closet/secure_closet/CMO2
 	name = "chief medical officer's attire"
@@ -140,24 +143,22 @@
 
 /obj/structure/closet/secure_closet/CMO2/fill()
 	new /obj/item/storage/backpack/medic(src)
-	new /obj/item/storage/backpack/satchel_med(src)
-	new /obj/item/clothing/under/rank/medical/blue(src)
-	new /obj/item/clothing/head/surgery/blue(src)
-	new /obj/item/clothing/under/rank/medical/green(src)
-	new /obj/item/clothing/head/surgery/green(src)
-	new /obj/item/clothing/under/rank/medical/purple(src)
-	new /obj/item/clothing/head/surgery/purple(src)
+	new /obj/item/storage/backpack/satchel/med(src)
+	new /obj/item/clothing/under/rank/medical/surgeon/pmc(src)
+	new /obj/item/clothing/head/surgery/pmc(src)
+	new /obj/item/clothing/under/rank/medical/surgeon/idris(src)
+	new /obj/item/clothing/under/rank/medical/surgeon/idris(src)
+	new /obj/item/clothing/under/rank/medical/surgeon/zeng(src)
+	new /obj/item/clothing/under/rank/medical/surgeon/zeng(src)
 	new /obj/item/clothing/under/rank/chief_medical_officer(src)
 	new /obj/item/clothing/suit/storage/toggle/labcoat/cmo(src)
 	new /obj/item/clothing/suit/storage/toggle/labcoat/cmoalt(src)
 	new /obj/item/clothing/shoes/brown	(src)
 	new /obj/item/device/radio/headset/heads/cmo(src)
 
-
 /obj/structure/closet/secure_closet/animal
 	name = "animal control closet"
 	req_access = list(access_surgery)
-
 
 /obj/structure/closet/secure_closet/animal/fill()
 	..()
@@ -165,7 +166,6 @@
 	new /obj/item/device/radio/electropack(src)
 	new /obj/item/device/radio/electropack(src)
 	new /obj/item/device/radio/electropack(src)
-
 
 /obj/structure/closet/secure_closet/chemical
 	name = "chemistry equipment closet"
@@ -188,3 +188,19 @@
 	new /obj/item/storage/box/beakers(src)
 	new /obj/item/storage/bag/chemistry(src)
 	new /obj/item/storage/bag/chemistry(src)
+
+// Psychiatric
+/obj/structure/closet/secure_closet/psychiatric
+	name = "psychiatric supplies locker"
+	desc = "A psychiatric supplies locker."
+	icon_state = "med"
+	req_access = list(access_psychiatrist)
+
+/obj/structure/closet/secure_closet/psychiatric/fill()
+	..()
+	new /obj/item/clothing/suit/straight_jacket(src)
+	new /obj/item/reagent_containers/food/drinks/teapot(src)
+	new /obj/item/toy/plushie/therapy(src)
+	new /obj/item/toy/plushie/slime(src)
+	new /obj/item/toy/plushie/bee(src)
+	new /obj/item/device/flashlight/pen(src)

@@ -19,9 +19,9 @@
 	var/r = hex2num(textr)
 	var/g = hex2num(textg)
 	var/b = hex2num(textb)
-	textr = num2hex(255 - r)
-	textg = num2hex(255 - g)
-	textb = num2hex(255 - b)
+	textr = num2hex(255 - r, 0)
+	textg = num2hex(255 - g, 0)
+	textb = num2hex(255 - b, 0)
 	if (length(textr) < 2)
 		textr = text("0[]", textr)
 	if (length(textg) < 2)
@@ -827,7 +827,7 @@ var/global/list/common_tools = list(
 /proc/can_operate(mob/living/carbon/M) //If it's 2, commence surgery, if it's 1, fail surgery, if it's 0, attack
 	var/surgery_attempt = SURGERY_IGNORE
 	var/located = FALSE
-	if(istype(M.buckled_to, /obj/machinery/stasis_bed) || locate(/obj/machinery/optable, M.loc))
+	if(locate(/obj/machinery/optable, M.loc))
 		located = TRUE
 		surgery_attempt = SURGERY_SUCCESS
 	else if(locate(/obj/structure/bed/roller, M.loc))
@@ -983,8 +983,8 @@ var/global/known_proc = new /proc/get_type_ref_bytes
 		return details && show_useless_subtypes ? "regex([D.type])" : "regex"
 	if(istype(D, /sound))
 		return details ? "sound([D.type])" : "sound"
-	if(istype(D, /decl))
-		return details ? "decl([D.type])" : "decl"
+	if(istype(D, /singleton))
+		return details ? "singleton([D.type])" : "singleton"
 	if(isdatum(D))
 		return details ? "datum([D.type])" : "datum"
 	if(istype(D)) // let's future proof ourselves
@@ -1020,7 +1020,7 @@ var/global/known_proc = new /proc/get_type_ref_bytes
 		colour = pick(list("FF0000","FF7F00","FFFF00","00FF00","0000FF","4B0082","8F00FF"))
 	else
 		for(var/i=1;i<=3;i++)
-			var/temp_col = "[num2hex(rand(lower,upper))]"
+			var/temp_col = "[num2hex(rand(lower,upper), 0)]"
 			if(length(temp_col )<2)
 				temp_col  = "0[temp_col]"
 			colour += temp_col
@@ -1094,7 +1094,7 @@ var/global/known_proc = new /proc/get_type_ref_bytes
 /proc/stoplag(initial_delay)
 	// If we're initializing, our tick limit might be over 100 (testing config), but stoplag() penalizes procs that go over.
 	// 	Unfortunately, this penalty slows down init a *lot*. So, we disable it during boot and lobby, when relatively few things should be calling this.
-	if (!Master || Master.initializing || !Master.round_started)
+	if (!Master || GAME_STATE < RUNLEVEL_SETUP)
 		sleep(world.tick_lag)
 		return 1
 

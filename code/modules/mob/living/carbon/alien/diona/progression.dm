@@ -8,7 +8,7 @@
 		src.forceMove(L.loc)
 		qdel(L)
 
-	return SPECIES_DIONA_COEUS
+	return TRUE
 
 /mob/living/carbon/alien/diona/proc/grow()
 	set name = "Exponential Growth"
@@ -32,8 +32,7 @@
 		return
 
 	// confirm_evolution() handles choices and other specific requirements.
-	var/new_species = confirm_evolution()
-	if(!new_species || !adult_form)
+	if(!confirm_evolution() || !adult_form)
 		return
 
 	stunned = 10 // No more moving or talking for now
@@ -45,7 +44,6 @@
 	SPAN_WARNING("All at once, we consume our stored nutrients to surge with growth, splitting into a tangle of new gestalt. We have attained a new form."))
 
 	var/mob/living/carbon/human/adult = new adult_form(get_turf(src))
-	adult.set_species(new_species)
 	show_evolution_blurb()
 
 	if(mind)
@@ -70,13 +68,13 @@
 	for(var/mob/living/carbon/alien/diona/D in contents)
 		D.forceMove(adult)
 		D.gestalt = adult
-		D.stat = CONSCIOUS
+		D.set_stat(CONSCIOUS)
 
 	//Finally we put ourselves into the gestalt, NOT delete ourself
 	//Our mind is already in the gestalt, this is really just transferring our empty body
 	src.nutrition = 0
 	src.forceMove(adult)
-	src.stat = CONSCIOUS
+	set_stat(CONSCIOUS)
 	gestalt = adult
 
 	//What do you call a person with no arms or no legs?

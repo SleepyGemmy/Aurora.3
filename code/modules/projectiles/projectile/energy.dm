@@ -22,13 +22,11 @@
 		return
 
 	//blind adjacent people
-	for(var/mob/living/carbon/M in viewers(T, flash_range))
-		if(M.eyecheck() < FLASH_PROTECTION_MODERATE)
-			M.confused = rand(5,15)
-			M.flash_eyes()
+	for(var/mob/living/M in viewers(T, flash_range))
+		if(M.flash_act(ignore_inherent = TRUE))
+			M.confused = rand(5, 15)
 		else if(affected_limb && M == A)
 			M.confused = rand(2, 7)
-			flick("flash", M.flash)
 
 	//snap pop
 	playsound(src, 'sound/effects/snap.ogg', 50, 1)
@@ -106,7 +104,7 @@
 	check_armor = "bomb"
 	damage = 60
 	damage_type = BRUTE
-	pass_flags = PASSTABLE | PASSGLASS | PASSGRILLE
+	pass_flags = PASSTABLE | PASSGLASS | PASSGRILLE | PASSRAILING
 	range = 100
 	embed = 0
 	speed = 8
@@ -148,7 +146,7 @@
 	icon_state = "bluespace"
 	damage = 0
 	damage_type = BRUTE
-	pass_flags = PASSTABLE | PASSGRILLE
+	pass_flags = PASSTABLE | PASSGRILLE | PASSRAILING
 	range = 10
 	embed = 0
 	speed = 2
@@ -169,28 +167,6 @@
 /obj/item/projectile/energy/gravitydisabler/proc/turnongravity(var/area/A)
 	A.gravitychange(TRUE)
 
-/obj/item/projectile/energy/bee
-	name = "bees"
-	icon = 'icons/obj/apiary_bees_etc.dmi'
-	icon_state = "beegun"
-	check_armor = "bio"
-	damage = 5
-	damage_type = BRUTE
-	pass_flags = PASSTABLE | PASSGRILLE
-	embed = 0
-	weaken = 0
-
-/obj/item/projectile/energy/bee/on_impact(var/atom/A)
-	playsound(src.loc, pick('sound/effects/Buzz1.ogg','sound/effects/Buzz2.ogg'), 70, 1)
-	var/turf/T = get_turf(A)
-	if(!istype(T, /turf/simulated/wall) && !istype(A, /obj/structure/window) && !istype(A, /obj/machinery/door))
-		for(var/i=1, i<=8, i++)
-			var/atom/movable/x = new /mob/living/simple_animal/bee/beegun //hackmaster pro, butt fuck it
-			x.forceMove(T)
-	else
-		src.visible_message("<span class='danger'>[src] splat sickly against [T]!</span>")
-	..()
-
 /obj/item/projectile/energy/blaster
 	name = "blaster bolt"
 	icon_state = "heavybolt"
@@ -198,13 +174,18 @@
 	check_armor = "laser"
 	damage_type = BURN
 	damage_flags = DAM_LASER
-	pass_flags = PASSTABLE | PASSGLASS | PASSGRILLE
+	pass_flags = PASSTABLE | PASSGLASS | PASSGRILLE | PASSRAILING
 	muzzle_type = /obj/effect/projectile/muzzle/bolt
 	hit_effect = /obj/effect/temp_visual/blaster_effect
 
 /obj/item/projectile/energy/blaster/disruptor
 	damage = 20
-	pass_flags = PASSTABLE
+	pass_flags = PASSTABLE | PASSRAILING
+
+/obj/item/projectile/energy/blaster/disruptor/practice
+	damage = 5
+	damage_type = PAIN
+	eyeblur = 0
 
 /obj/item/projectile/energy/disruptorstun
 	name = "disruptor bolt"
@@ -214,8 +195,13 @@
 	speed = 0.4
 	damage_type = BURN
 	eyeblur = TRUE
-	pass_flags = PASSTABLE
+	pass_flags = PASSTABLE | PASSRAILING
 	muzzle_type = /obj/effect/projectile/muzzle/bolt
+
+/obj/item/projectile/energy/disruptorstun/practice
+	damage = 5
+	damage_type = PAIN
+	eyeblur = 0
 
 /obj/item/projectile/energy/blaster/heavy
 	damage = 35
@@ -223,5 +209,6 @@
 
 /obj/item/projectile/energy/blaster/incendiary
 	icon_state = "laser"
-	damage = 15
-	incinerate = 2
+	damage = 30
+	armor_penetration = 10
+	incinerate = 4

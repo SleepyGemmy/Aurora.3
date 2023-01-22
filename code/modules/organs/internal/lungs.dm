@@ -139,7 +139,6 @@
 
 	var/safe_exhaled_max = 10
 	var/safe_toxins_max = 0.2
-	var/SA_para_min = 1
 	var/SA_sleep_min = 5
 	var/inhaled_gas_used = 0
 
@@ -233,7 +232,7 @@
 	if(toxins_pp > safe_toxins_max)
 		var/ratio = (poison/safe_toxins_max) * 10
 		if(reagents)
-			reagents.add_reagent(/decl/reagent/toxin, Clamp(ratio, MIN_TOXIN_DAMAGE, MAX_TOXIN_DAMAGE))
+			reagents.add_reagent(/singleton/reagent/toxin, Clamp(ratio, MIN_TOXIN_DAMAGE, MAX_TOXIN_DAMAGE))
 			breath.adjust_gas(poison_type, -poison/6, update = 0) //update after
 		owner.phoron_alert = max(owner.phoron_alert, 1)
 	else
@@ -243,15 +242,10 @@
 	if(breath.gas[GAS_N2O])
 		var/SA_pp = (breath.gas[GAS_N2O] / breath.total_moles) * breath_pressure
 
-		// Enough to make us paralysed for a bit
-		if(SA_pp > SA_para_min)
-
-			// 3 gives them one second to wake up and run away a bit!
-			owner.Paralyse(3)
-
-			// Enough to make us sleep as well
-			if(SA_pp > SA_sleep_min)
-				owner.Sleeping(10)
+		// Enough to make us sleep as well
+		if(SA_pp > SA_sleep_min)
+			owner.Sleeping(10)
+			owner.eye_blurry = 10
 
 		// There is sleeping gas in their lungs, but only a little, so give them a bit of a warning
 		else if(SA_pp > 0.15)
@@ -292,7 +286,7 @@
 	return failed_breath
 
 /obj/item/organ/internal/lungs/proc/handle_temperature_effects(datum/gas_mixture/breath)
-	if((breath.temperature < species.cold_level_1 || breath.temperature > species.heat_level_1) && !(COLD_RESISTANCE in owner.mutations))
+	if((breath.temperature < species.cold_level_1 || breath.temperature > species.heat_level_1) && NOT_FLAG(owner.mutations, COLD_RESISTANCE))
 
 		if(breath.temperature <= owner.species.cold_level_1)
 			if(prob(20))

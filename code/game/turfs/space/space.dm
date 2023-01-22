@@ -15,6 +15,8 @@
 	is_hole = TRUE
 
 	permit_ao = FALSE
+	z_eventually_space = TRUE
+	turf_flags = TURF_FLAG_BACKGROUND
 	var/use_space_appearance = TRUE
 	var/use_starlight = TRUE
 
@@ -24,8 +26,8 @@
 // Copypaste of parent for performance.
 /turf/space/Initialize()
 	if(use_space_appearance)
-		appearance = SSicon_cache.space_cache["[((x + y) ^ ~(x * y) + z) % 25]"]
-	if(config.starlight && use_starlight)
+		appearance = SSskybox.space_appearance_cache[(((x + y) ^ ~(x * y) + z) % 25) + 1]
+	if(config.starlight && use_starlight && lighting_overlays_initialized)
 		update_starlight()
 
 	if (initialized)
@@ -34,9 +36,12 @@
 	initialized = TRUE
 
 	for(var/atom/movable/AM as mob|obj in src)
-		src.Entered(AM)
+		src.Entered(AM, AM.loc)
 
 	turfs += src
+
+	if (isStationLevel(z))
+		station_turfs += src
 
 	if(dynamic_lighting)
 		luminosity = 0
@@ -44,6 +49,14 @@
 		luminosity = 1
 
 	return INITIALIZE_HINT_NORMAL
+
+/turf/space/Destroy()
+	// Cleanup cached z_eventually_space values above us.
+	if (above)
+		var/turf/T = src
+		while ((T = GetAbove(T)))
+			T.z_eventually_space = FALSE
+	return ..()
 
 /turf/space/is_space()
 	return 1
@@ -53,22 +66,17 @@
 	for(var/obj/O in src)
 		O.hide(0)
 
-/turf/space/is_solid_structure()
-	return locate(/obj/structure/lattice, src) //counts as solid structure if it has a lattice
-
 /turf/space/can_have_cabling()
 	if (locate(/obj/structure/lattice/catwalk) in src)
 		return 1
 
 	return 0
 
-/turf/space/proc/update_starlight(var/validate = TRUE)
+/turf/space/proc/update_starlight()
 	if(!config.starlight)
 		return
-	if(!validate) // basically a hack for places where the check was already done for us
-		set_light(1, config.starlight)
-	else if(locate(/turf/simulated) in RANGE_TURFS(1, src))
-		set_light(1, config.starlight)
+	if(locate(/turf/simulated) in RANGE_TURFS(1, src))
+		set_light(1, config.starlight, l_color = SSskybox.background_color)
 	else
 		set_light(0)
 
@@ -107,7 +115,7 @@
 	if(movement_disabled)
 		to_chat(usr, "<span class='warning'>Movement is admin-disabled.</span>") //This is to identify lag problems)
 		return
-	..()
+	..(A, A.loc)
 	if ((!(A) || src != A.loc))	return
 
 	inertial_drift(A)

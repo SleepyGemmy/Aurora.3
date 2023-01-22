@@ -14,8 +14,9 @@
  */
 /obj/structure/closet/emcloset
 	name = "emergency closet"
-	desc = "It's a storage unit for emergency breathmasks and o2 tanks."
+	desc = "It's a storage unit for emergency breathmasks and oxygen tanks."
 	icon_state = "emergency"
+	obj_flags = OBJ_FLAG_MOVES_UNSUPPORTED
 
 /obj/structure/closet/emcloset/fill()
 	switch (pickweight(list("small" = 50, "aid" = 20, "tank" = 10, "seal" = 10, "all" = 10)))
@@ -93,31 +94,54 @@
 	new /obj/item/storage/pill_bottle/rmt
 	new /obj/item/clothing/mask/offworlder
 
+/obj/structure/closet/emcloset/communal
+	name = "communal emergency closet"
+	anchored = TRUE
+	canbemoved = TRUE
+
+/obj/structure/closet/emcloset/communal/fill()
+	// 2 helmets, 2 masks, 2 suits, 2 oxygen tanks, and 4 oxygen candles.
+	new /obj/item/clothing/head/helmet/space/emergency(src)
+	new /obj/item/clothing/head/helmet/space/emergency(src)
+	new /obj/item/clothing/mask/breath(src)
+	new /obj/item/clothing/mask/breath(src)
+	new /obj/item/clothing/suit/space/emergency(src)
+	new /obj/item/clothing/suit/space/emergency(src)
+	new /obj/item/tank/emergency_oxygen(src)
+	new /obj/item/tank/emergency_oxygen(src)
+	new /obj/item/device/oxycandle(src)
+	new /obj/item/device/oxycandle(src)
+	new /obj/item/device/oxycandle(src)
+	new /obj/item/device/oxycandle(src)
+
 /*
  * Fire Closet
  */
 /obj/structure/closet/firecloset
-	name = "fire-safety closet"
-	desc = "It's a storage unit for fire-fighting supplies."
+	name = "firefighting closet"
+	desc = "It's a storage unit for firefighting supplies."
 	icon_state = "fire"
 
 /obj/structure/closet/firecloset/fill()
 	new /obj/item/clothing/head/hardhat/firefighter(src)
 	new /obj/item/clothing/suit/fire(src)
-	new /obj/item/clothing/mask/gas(src)
+	new /obj/item/clothing/mask/gas/alt(src)
+	new /obj/item/crowbar/rescue_axe/red(src)
 	new /obj/item/tank/oxygen/red(src)
 	new /obj/item/extinguisher(src)
+	new /obj/item/inflatable/door(src)
+	new /obj/item/inflatable/wall(src)
+	new /obj/item/inflatable/wall(src)
 
 /obj/structure/closet/firecloset/full/fill()
 	new /obj/item/clothing/head/hardhat/firefighter(src)
 	new /obj/item/clothing/suit/fire(src)
-	new /obj/item/clothing/mask/gas(src)
+	new /obj/item/clothing/mask/gas/alt(src)
+	new /obj/item/crowbar/rescue_axe/red(src)
 	new /obj/item/device/flashlight(src)
 	new /obj/item/tank/oxygen/red(src)
 	new /obj/item/extinguisher(src)
-
-
-
+	new /obj/item/storage/bag/inflatable/emergency(src)
 
 /*
  * Tool Closet

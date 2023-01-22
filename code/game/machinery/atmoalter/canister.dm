@@ -20,10 +20,10 @@
 
 	var/canister_color = "yellow"
 	var/can_label = 1
-	start_pressure = 45 * ONE_ATMOSPHERE
+	start_pressure = PRESSURE_ONE_THOUSAND * 5
 	var/temperature_resistance = 1000 + T0C
 	volume = 1000
-	use_power = 0
+	use_power = POWER_USE_OFF
 	interact_offline = 1 // Allows this to be used when not in powered area.
 	var/release_log = ""
 	var/update_flag = 0
@@ -91,6 +91,11 @@
 /obj/machinery/portable_atmospherics/canister/empty/
 	start_pressure = 0
 	can_label = 1
+
+/obj/machinery/portable_atmospherics/canister/empty/air
+	name = "Canister: \[Air\]"
+	icon_state = "grey"
+	canister_color = "grey"
 
 /obj/machinery/portable_atmospherics/canister/empty/oxygen
 	name = "Canister: \[O2\]"
@@ -226,7 +231,7 @@ update_flag
 	else
 		return 1
 
-/obj/machinery/portable_atmospherics/canister/machinery_process()
+/obj/machinery/portable_atmospherics/canister/process()
 	if (destroyed)
 		return PROCESS_KILL
 
@@ -236,8 +241,9 @@ update_flag
 		var/datum/gas_mixture/environment
 		if(holding)
 			environment = holding.air_contents
-		else
+		else if(loc)
 			environment = loc.return_air()
+		else return
 
 		var/env_pressure = environment.return_pressure()
 		var/pressure_delta = release_pressure - env_pressure

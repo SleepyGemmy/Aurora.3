@@ -25,7 +25,7 @@
 	var/damage = W.force / 4.0
 	if(W.iswelder())
 		var/obj/item/weldingtool/WT = W
-		if(WT.remove_fuel(0, user))
+		if(WT.use(0, user))
 			damage = 15
 			playsound(loc, 'sound/items/welder.ogg', 100, 1)
 		return TRUE
@@ -132,7 +132,7 @@
 /obj/effect/spider/spiderling
 	name = "greimorian larva"
 	desc = "A small, agile alien creature. It oozes some disgusting slime."
-	desc_fluff = "Greimorians are a species of arthropods whose evolutionary traits have made them an extremely dangerous invasive species.  \
+	desc_extended = "Greimorians are a species of arthropods whose evolutionary traits have made them an extremely dangerous invasive species.  \
 	They originate from the Badlands planet Greima, once covered in crystalized phoron. A decaying orbit led to its combustion from proximity to its sun, and its dominant inhabitants \
 	managed to survive in orbit. Countless years later, they prove to be a menace across the galaxy, having carried themselves within the hulls of Human vessels to spread wildly."
 	icon_state = "spiderling"

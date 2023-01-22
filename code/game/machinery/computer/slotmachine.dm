@@ -11,11 +11,10 @@
 /obj/machinery/computer/slot_machine
 	name = "slot machine"
 	desc = "Gambling for the antisocial."
-	icon = 'icons/obj/machines/slotmachine.dmi'
+	icon = 'icons/obj/machinery/slotmachine.dmi'
 	icon_state = "slots"
 	density = TRUE
 	clicksound = null
-	use_power = 1
 	idle_power_usage = 250
 	active_power_usage = 500
 	circuit = /obj/item/circuitboard/slot_machine
@@ -130,7 +129,7 @@
 	if(!emagged)
 		emmaged = TRUE
 		spark(src, 3)
-		playsound(src, /decl/sound_category/spark_sound, 50, 1)
+		playsound(src, /singleton/sound_category/spark_sound, 50, 1)
 		return TRUE
 
 /obj/machinery/computer/slot_machine/ui_interact(mob/living/user)
@@ -173,7 +172,7 @@
 		spin(usr)
 
 	else if(href_list["refund"])
-		playsound(src, /decl/sound_category/button_sound, clickvol)
+		playsound(src, /singleton/sound_category/button_sound, clickvol)
 		if(balance > 0)
 			give_payout(balance, usr)
 			balance = 0
@@ -264,6 +263,7 @@
 
 	if(reels[1][2] + reels[2][2] + reels[3][2] + reels[4][2] + reels[5][2] == "[SEVEN][SEVEN][SEVEN][SEVEN][SEVEN]")
 		visible_message("<b>[src]</b> says, 'JACKPOT! You win [money] credits!'")
+		global_announcer.autosay("Congratulations to [user ? user.real_name : usrname] for winning the jackpot at the slot machine in [get_area(src)]!", "Automated Announcement System")
 		playsound(loc, 'sound/arcade/sloto_jackpot.ogg', 20, 1, required_asfx_toggles = ASFX_ARCADE) // ham it up
 		jackpots += 1
 		balance += money - give_payout(JACKPOT)

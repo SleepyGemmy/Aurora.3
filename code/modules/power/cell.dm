@@ -48,7 +48,7 @@
 	return (charge >= amount)
 
 // use power from a cell, returns the amount actually used
-/obj/item/cell/proc/use(var/amount)
+/obj/item/cell/use(var/amount)
 	if (QDELING(src))
 		return 0
 
@@ -97,7 +97,7 @@
 
 		to_chat(user, "You inject the solution into the power cell.")
 
-		if(S.reagents.has_reagent(/decl/reagent/toxin/phoron, 5))
+		if(S.reagents.has_reagent(/singleton/reagent/toxin/phoron, 5))
 
 			rigged = 1
 

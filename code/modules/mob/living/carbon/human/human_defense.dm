@@ -18,7 +18,7 @@ emp_act
 		var/deflection_chance = check_martial_deflection_chance()
 		if(prob(deflection_chance))
 			visible_message(SPAN_WARNING("\The [src] deftly dodges \the [P]!"), SPAN_NOTICE("You deftly dodge \the [P]!"))
-			playsound(src, /decl/sound_category/bulletflyby_sound, 75, TRUE)
+			playsound(src, /singleton/sound_category/bulletflyby_sound, 75, TRUE)
 			return PROJECTILE_DODGED
 
 	def_zone = check_zone(def_zone)
@@ -355,7 +355,7 @@ emp_act
 		if (O.throw_source)
 			var/distance = get_dist(O.throw_source, loc)
 			miss_chance = 15 * (distance - 2)
-		zone = get_zone_with_miss_chance(zone, src, miss_chance, ranged_attack=1)
+		zone = get_zone_with_miss_chance(zone, src, miss_chance, 1)
 
 		if(zone && O.thrower != src)
 			var/shield_check = check_shields(throw_damage, O, thrower, zone, "[O]")

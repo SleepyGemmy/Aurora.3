@@ -117,7 +117,7 @@ LINEN BINS
 	if (do_after(user, 25, src))
 		if(user.loc != loc)
 			user.do_attack_animation(src)
-		playsound(get_turf(loc), /decl/sound_category/rustle_sound, 15, 1, -5)
+		playsound(get_turf(loc), /singleton/sound_category/rustle_sound, 15, 1, -5)
 		var/folds = fold
 		user.visible_message(SPAN_NOTICE("\The [user] [folds ? "unfolds" : "folds"] \the [src]."),
 				SPAN_NOTICE("You [fold ? "unfold" : "fold"] \the [src]."))
@@ -151,7 +151,7 @@ LINEN BINS
 	if (do_after(user, 6, src))
 		if(user.loc != loc)
 			user.do_attack_animation(src)
-		playsound(get_turf(loc), /decl/sound_category/rustle_sound, 15, 1, -5)
+		playsound(get_turf(loc), /singleton/sound_category/rustle_sound, 15, 1, -5)
 		var/rolls = roll
 		user.visible_message(SPAN_NOTICE("\The [user] [rolls ? "unrolls" : "rolls"] \the [src]."),
 							SPAN_NOTICE("You [roll ? "unroll" : "roll"] \the [src]."))
@@ -179,14 +179,14 @@ LINEN BINS
 /obj/item/bedsheet/attackby(obj/item/I, mob/user)
 	if(I.isscrewdriver())
 		user.visible_message(SPAN_NOTICE("\The [user] begins poking eyeholes in \the [src] with \the [I]."), SPAN_NOTICE("You begin poking eyeholes in \the [src] with \the [I]."))
-		if(do_after(user, 50/I.toolspeed))
+		if(I.use_tool(src, user, 50, volume = 50))
 			to_chat(user, SPAN_NOTICE("You poke eyeholes in \the [src]!"))
 			new /obj/item/bedsheet/costume(get_turf(src))
 			qdel(src)
 		return TRUE
 	else if(is_sharp(I))
 		user.visible_message(SPAN_NOTICE("\The [user] begins cutting up \the [src] with \the [I]."), SPAN_NOTICE("You begin cutting up \the [src] with \the [I]."))
-		if(do_after(user, 50 / I.toolspeed))
+		if(I.use_tool(src, user, 50, volume = 50))
 			to_chat(user, SPAN_NOTICE("You cut \the [src] into pieces!"))
 			new /obj/item/stack/material/cloth(get_turf(src), rand(2, 5))
 			qdel(src)
@@ -249,7 +249,7 @@ LINEN BINS
 
 /obj/item/bedsheet/captain
 	name = "captain's bedsheet"
-	desc = "It has a Nanotrasen symbol on it, and was woven with a revolutionary new kind of thread guaranteed to have 0.01% permeability for most non-chemical substances, popular among most modern captains."
+	desc = "It has a NanoTrasen symbol on it, and was woven with a revolutionary new kind of thread guaranteed to have 0.01% permeability for most non-chemical substances, popular among most modern captains."
 	icon_state = "sheetcaptain"
 	item_state = "sheetcaptain"
 
@@ -307,7 +307,7 @@ LINEN BINS
 
 /obj/item/bedsheet/nanotrasen
 	name = "nanotrasen bedsheet"
-	desc = "It has the Nanotrasen logo on it and has an aura of duty."
+	desc = "It has the NanoTrasen logo on it and has an aura of duty."
 	icon_state = "sheetNT"
 	item_state = "sheetNT"
 

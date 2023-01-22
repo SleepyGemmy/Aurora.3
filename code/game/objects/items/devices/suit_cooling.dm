@@ -2,7 +2,7 @@
 	name = "portable suit cooling unit"
 	desc = "A portable heat sink and liquid cooled radiator that can be hooked up to a space suit's existing temperature controls to provide industrial levels of cooling."
 	w_class = ITEMSIZE_LARGE
-	icon = 'icons/obj/contained_items/tools/suitcooler.dmi'
+	icon = 'icons/obj/item/tools/suitcooler.dmi'
 	icon_state = "suitcooler0"
 	item_state = "coolingpack"
 	action_button_name = "Toggle Cooling Unit"
@@ -32,12 +32,11 @@
 
 /obj/item/device/suit_cooling_unit/Initialize()
 	. = ..()
-	START_PROCESSING(SSprocessing, src)
 	if(celltype)
 		cell = new celltype(src)
 
 /obj/item/device/suit_cooling_unit/Destroy()
-	STOP_PROCESSING(SSprocessing, src)
+	STOP_PROCESSING(SSmob, src)
 	QDEL_NULL(cell)
 	return ..()
 
@@ -85,7 +84,7 @@
 			return C.air_contents.temperature
 
 	var/turf/T = get_turf(src)
-	if(istype(T, /turf/space))
+	if(istype(T, /turf/space) || !isturf(T))
 		return FALSE	//space has no temperature, this just makes sure the cooling unit works in space
 
 	var/datum/gas_mixture/environment = T.return_air()
@@ -112,6 +111,7 @@
 		return
 
 	on = TRUE
+	START_PROCESSING(SSmob, src)
 	update_icon()
 
 /obj/item/device/suit_cooling_unit/proc/turn_off()
@@ -119,6 +119,7 @@
 		var/mob/M = src.loc
 		to_chat(M, SPAN_WARNING("\The [src] clicks and whines as it powers down."))
 	on = FALSE
+	STOP_PROCESSING(SSmob, src)
 	update_icon()
 
 /obj/item/device/suit_cooling_unit/attack_self(mob/user)

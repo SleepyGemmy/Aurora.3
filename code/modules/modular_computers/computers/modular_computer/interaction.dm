@@ -146,9 +146,13 @@
 	else
 		to_chat(user, SPAN_WARNING("\The [src] does not have a card or item stored in the card slot."))
 
-/obj/item/modular_computer/attack(mob/living/M, mob/living/user)
+/obj/item/modular_computer/attack(mob/living/M, mob/living/user, var/sound_scan)
+	sound_scan = FALSE
+	if(last_scan <= world.time - 20) //Spam limiter.
+		last_scan = world.time
+		sound_scan = TRUE
 	if(scan_mode == SCANNER_MEDICAL)
-		health_scan_mob(M, user, TRUE)
+		health_scan_mob(M, user, TRUE, sound_scan = sound_scan)
 
 /obj/item/modular_computer/afterattack(atom/A, mob/user, proximity_flag, click_parameters)
 	. = ..()
@@ -161,7 +165,7 @@
 		if(reagents_length)
 			to_chat(user, SPAN_NOTICE("[reagents_length] chemical agent[reagents_length > 1 ? "s" : ""] found."))
 			for(var/_re in A.reagents.reagent_volumes)
-				var/decl/reagent/re = decls_repository.get_decl(_re)
+				var/singleton/reagent/re = GET_SINGLETON(_re)
 				to_chat(user, SPAN_NOTICE("    [re.name]"))
 		else
 			to_chat(user, SPAN_NOTICE("No active chemical agents found in [A]."))
@@ -268,8 +272,7 @@
 			to_chat(user, SPAN_WARNING("You have to remove all the components from \the [src] before disassembling it."))
 			return TRUE
 		to_chat(user, SPAN_NOTICE("You begin to disassemble \the [src]."))
-		playsound(get_turf(src), W.usesound, 100, TRUE)
-		if (do_after(user, 20/W.toolspeed))
+		if(W.use_tool(src, user, 20, volume = 50))
 			new /obj/item/stack/material/steel(get_turf(src), steel_sheet_cost)
 			user.visible_message(SPAN_NOTICE("\The [user] disassembles \the [src]."), SPAN_NOTICE("You disassemble \the [src]."), SPAN_NOTICE("You hear a ratcheting noise."))
 			qdel(src)
@@ -286,7 +289,7 @@
 
 		to_chat(user, SPAN_NOTICE("You begin repairing the damage to \the [src]..."))
 		playsound(get_turf(src), 'sound/items/welder.ogg', 100, 1)
-		if(WT.remove_fuel(round(damage / 75)) && do_after(user, damage / 10))
+		if(WT.use(round(damage / 75)) && do_after(user, damage / 10))
 			damage = 0
 			to_chat(user, SPAN_NOTICE("You fully repair \the [src]."))
 		update_icon()
@@ -325,9 +328,10 @@
 		return card_slot.stored_card
 
 /obj/item/modular_computer/hear_talk(mob/M, text, verb, datum/language/speaking)
-	if(Adjacent(M))
+	if(Adjacent(M) && hard_drive)
 		var/datum/computer_file/program/chat_client/P = hard_drive.find_file_by_name("ntnrc_client")
 		if(!P || (P.program_state == PROGRAM_STATE_KILLED && P.service_state == PROGRAM_STATE_KILLED))
 			return
 		if(P.focused_conv)
 			P.focused_conv.cl_send(P, text, M)
+	registered_message = text

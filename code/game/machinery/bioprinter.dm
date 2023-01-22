@@ -7,7 +7,6 @@
 
 	anchored = 1
 	density = 1
-	use_power = 1
 	idle_power_usage = 40
 
 	icon_state = "bioprinter"
@@ -62,8 +61,8 @@
 	// DNA sample from syringe.
 	if(!prints_prosthetics && istype(W,/obj/item/reagent_containers/syringe))
 		var/obj/item/reagent_containers/syringe/S = W
-		if(REAGENT_DATA(S.reagents, /decl/reagent/blood))
-			loaded_dna = REAGENT_DATA(S.reagents, /decl/reagent/blood)
+		if(REAGENT_DATA(S.reagents, /singleton/reagent/blood))
+			loaded_dna = REAGENT_DATA(S.reagents, /singleton/reagent/blood)
 			S.reagents.clear_reagents()
 			to_chat(user, "<span class='info'>You inject the blood sample into the bioprinter.</span>")
 		return TRUE

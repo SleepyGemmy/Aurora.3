@@ -3,7 +3,7 @@
 	var/id = null // All maps that should be loadable during runtime need an id
 	var/width = 0
 	var/height = 0
-	var/mappath = null
+	var/list/mappaths = null
 	var/loaded = 0 // Times loaded this round
 	var/static/dmm_suite/maploader = new
 	var/list/shuttles_to_initialise = list()
@@ -12,23 +12,26 @@
 	var/accessibility_weight = 0
 	var/template_flags = TEMPLATE_FLAG_ALLOW_DUPLICATES
 
-/datum/map_template/New(path = null, rename = null)
-	if(path)
-		mappath = path
-	if(mappath)
-		preload_size(mappath)
+/datum/map_template/New(var/list/paths = null, rename = null)
+	if(paths && !islist(paths))
+		crash_with("Non-list paths passed into map template constructor.")
+	if(paths)
+		mappaths = paths
+	if(mappaths)
+		preload_size(mappaths)
 	if(rename)
 		name = rename
 
-/datum/map_template/proc/preload_size(path)
+/datum/map_template/proc/preload_size(paths)
 	var/list/bounds = list(1.#INF, 1.#INF, 1.#INF, -1.#INF, -1.#INF, -1.#INF)
 	var/z_offset = 1 // needed to calculate z-bounds correctly
-	var/datum/map_load_metadata/M = maploader.load_map(file(path), 1, 1, z_offset, cropMap=FALSE, measureOnly=TRUE)
-	if(M)
-		bounds = extend_bounds_if_needed(bounds, M.bounds)
-		z_offset++
-	else
-		return FALSE
+	for(var/mappath in mappaths)
+		var/datum/map_load_metadata/M = maploader.load_map(file(mappath), 1, 1, z_offset, cropMap=FALSE, measureOnly=TRUE)
+		if(M)
+			bounds = extend_bounds_if_needed(bounds, M.bounds)
+			z_offset++
+		else
+			return FALSE
 	width = bounds[MAP_MAXX] - bounds[MAP_MINX] + 1
 	height = bounds[MAP_MAXY] - bounds[MAP_MINX] + 1
 	return bounds
@@ -45,12 +48,15 @@
 	var/list/atoms_to_initialise = list()
 	var/shuttle_state = pre_init_shuttles()
 
-	var/datum/map_load_metadata/M = maploader.load_map(file(mappath), x, y, no_changeturf = no_changeturf)
-	if (M)
-		bounds = extend_bounds_if_needed(bounds, M.bounds)
-		atoms_to_initialise += M.atoms_to_initialise
-	else
-		return FALSE
+	//Since queue_smooth() manually wakes the subsystem, we have to use enable/disable.
+	SSicon_smooth.disable()
+	for (var/mappath in mappaths)
+		var/datum/map_load_metadata/M = maploader.load_map(file(mappath), x, y, no_changeturf = no_changeturf)
+		if (M)
+			bounds = extend_bounds_if_needed(bounds, M.bounds)
+			atoms_to_initialise += M.atoms_to_initialise
+		else
+			return FALSE
 
 	for (var/z_index = bounds[MAP_MINZ]; z_index <= bounds[MAP_MAXZ]; z_index++)
 		if (accessibility_weight)
@@ -69,6 +75,8 @@
 	for(var/light_z = initial_z to world.maxz)
 		create_lighting_overlays_zlevel(light_z)
 	log_game("Z-level [name] loaded at [x], [y], [world.maxz]")
+	message_admins("Z-level [name] loaded at [x], [y], [world.maxz]")
+	SSicon_smooth.enable()
 	loaded++
 
 	return locate(world.maxx/2, world.maxy/2, world.maxz)
@@ -91,6 +99,7 @@
 	var/list/obj/machinery/atmospherics/atmos_machines = list()
 	var/list/obj/machinery/machines = list()
 	var/list/obj/structure/cable/cables = list()
+	var/list/obj/machinery/power/apc/apcs = list()
 
 	for(var/atom/A in atoms)
 		if(istype(A, /turf))
@@ -103,6 +112,10 @@
 			machines += A
 		if(istype(A,/obj/effect/landmark/map_load_mark))
 			LAZYADD(subtemplates_to_spawn, A)
+		if(istype(A, /obj/machinery/power/apc))
+			apcs += A
+		if(isnull(A))
+			atoms -= A
 		if(A.initialized)
 			atoms -= A
 
@@ -113,10 +126,14 @@
 
 	SSatoms.InitializeAtoms(atoms) // The atoms should have been getting queued there. This flushes the queue.
 
-	SSmachinery.setup_template_powernets(cables)
+	SSmachinery.setup_powernets_for_cables(cables)
 	SSmachinery.setup_atmos_machinery(atmos_machines)
 	if(notsuspended)
 		SSmachinery.wake()
+
+	for (var/i in apcs)
+		var/obj/machinery/power/apc/apc = i
+		apc.update() // map-loading areas and APCs is weird, okay
 
 	for (var/i in machines)
 		var/obj/machinery/machine = i
@@ -124,7 +141,7 @@
 
 	for (var/i in turfs)
 		var/turf/T = i
-		T.post_change()
+		T.post_change(FALSE)
 		if(template_flags & TEMPLATE_FLAG_NO_RUINS)
 			T.flags |= TURF_NORUINS
 		if(istype(T,/turf/simulated))
@@ -144,16 +161,21 @@
 	var/list/atoms_to_initialise = list()
 	var/shuttle_state = pre_init_shuttles()
 
-	var/datum/map_load_metadata/M = maploader.load_map(file(mappath), T.x, T.y, T.z, cropMap=TRUE, no_changeturf = FALSE)
-	if (M)
-		atoms_to_initialise += M.atoms_to_initialise
-	else
-		return FALSE
+	//Since queue_smooth() manually wakes the subsystem, we have to use enable/disable.
+	SSicon_smooth.disable()
+	for (var/mappath in mappaths)
+		var/datum/map_load_metadata/M = maploader.load_map(file(mappath), T.x, T.y, T.z, cropMap=TRUE)
+		if (M)
+			atoms_to_initialise += M.atoms_to_initialise
+		else
+			return FALSE
 	
 	//initialize things that are normally initialized after map load
 	init_atoms(atoms_to_initialise)
 	init_shuttles(shuttle_state)
 
+	SSicon_smooth.enable()
+	message_admins("[name] loaded at [T.x], [T.y], [T.z]")
 	log_game("[name] loaded at [T.x], [T.y], [T.z]")
 	return TRUE
 

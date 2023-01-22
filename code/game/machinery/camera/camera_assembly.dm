@@ -167,9 +167,9 @@
 
 	to_chat(user, "<span class='notice'>You start to weld the [src]..</span>")
 	playsound(src.loc, 'sound/items/welder.ogg', 50, 1)
-	WT.eyecheck(user)
+	user.flash_act(FLASH_PROTECTION_MAJOR)
 	busy = 1
-	if(do_after(user, 20/WT.toolspeed))
+	if(WT.use_tool(src, user, 20, volume = 50))
 		busy = 0
 		if(!WT.isOn())
 			return 0

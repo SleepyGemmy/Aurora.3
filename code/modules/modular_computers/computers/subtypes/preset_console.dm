@@ -110,6 +110,11 @@
 	desc = "A computer that has a special teleporter control program loaded."
 	_app_preset_type = /datum/modular_computer_app_presets/command/teleporter
 
+/obj/item/modular_computer/console/preset/command/teleporter/ninja
+	name = "teleporter control console"
+	desc = "A computer that has a special teleporter control program loaded."
+	_app_preset_type = /datum/modular_computer_app_presets/command/teleporter/ninja
+
 // Civilian
 /obj/item/modular_computer/console/preset/civilian
 	name = "civilian console"
@@ -163,6 +168,8 @@
 	ai_slot = new/obj/item/computer_hardware/ai_slot(src)
 	card_slot = new/obj/item/computer_hardware/card_slot(src)
 
+/obj/item/modular_computer/console/preset/merchant/nka
+	_app_preset_type = /datum/modular_computer_app_presets/merchant/nka
 
 // AI
 /obj/item/modular_computer/console/preset/ai

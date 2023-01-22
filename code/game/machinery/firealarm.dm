@@ -3,15 +3,14 @@
 	desc = "<i>\"Pull this in case of emergency\"</i>. Thus, keep pulling it forever."
 	icon = 'icons/obj/monitors.dmi'
 	icon_state = "fire0"
-	var/previous_state = 0
-	var/previous_fire_state = FALSE
+	obj_flags = OBJ_FLAG_MOVES_UNSUPPORTED
 	var/detecting = 1
 	var/working = 1
 	var/time = 10
 	var/timing = 0
 	var/lockdownbyai = 0
+	init_flags = 0 // Processing is only for timed alarms now
 	anchored = 1
-	use_power = 1
 	idle_power_usage = 2
 	active_power_usage = 6
 	power_channel = ENVIRON
@@ -19,6 +18,8 @@
 	var/wiresexposed = 0
 	var/buildstage = 2 // 2 = complete, 1 = no wires,  0 = circuit gone
 	var/seclevel
+	///looping sound datum for our fire alarm siren.
+	var/datum/looping_sound/firealarm/soundloop
 
 /obj/machinery/firealarm/examine(mob/user)
 	. = ..()
@@ -55,19 +56,14 @@
 			icon_state = "fire0"
 			switch(seclevel)
 				if("green")
-					previous_state = icon_state
 					set_light(l_range = L_WALLMOUNT_RANGE, l_power = L_WALLMOUNT_POWER, l_color = LIGHT_COLOR_GREEN)
 				if("blue")
-					previous_state = icon_state
 					set_light(l_range = L_WALLMOUNT_RANGE, l_power = L_WALLMOUNT_POWER, l_color = LIGHT_COLOR_BLUE)
 				if("yellow")
-					previous_state = icon_state
 					set_light(l_range = L_WALLMOUNT_HI_RANGE, l_power = L_WALLMOUNT_HI_POWER, l_color = LIGHT_COLOR_YELLOW)
 				if("red")
-					previous_state = icon_state
 					set_light(l_range = L_WALLMOUNT_HI_RANGE, l_power = L_WALLMOUNT_HI_POWER, l_color = LIGHT_COLOR_RED)
 				if("delta")
-					previous_state = icon_state
 					set_light(l_range = L_WALLMOUNT_HI_RANGE, l_power = L_WALLMOUNT_HI_POWER, l_color = LIGHT_COLOR_ORANGE)
 
 		add_overlay(image(icon, "overlay_[seclevel]", layer = EFFECTS_ABOVE_LIGHTING_LAYER))
@@ -152,33 +148,24 @@
 
 	src.alarm()
 
-/obj/machinery/firealarm/machinery_process()//Note: this processing was mostly phased out due to other code, and only runs when needed
-	var/area/A = get_area(src)
-	if (A.fire != previous_fire_state)
-		update_icon()
-		previous_fire_state = A.fire
-
-	if (stat != previous_state)
-		update_icon()
-		previous_state = stat
-
+/obj/machinery/firealarm/process()//Note: this processing was mostly phased out due to other code, and only runs when needed
 	if(stat & (NOPOWER|BROKEN))
 		return
 
-	if(src.timing)
-		if(src.time > 0)
-			src.time = src.time - ((world.timeofday - last_process)/10)
-		else
-			src.alarm()
-			src.time = 0
-			src.timing = 0
-		src.updateDialog()
-	last_process = world.timeofday
+	if(!timing)
+		return PROCESS_KILL
 
-	if(locate(/obj/fire) in loc)
+	if(src.time <= 0)
 		alarm()
+		src.time = 0
+		timing = FALSE
+		. = PROCESS_KILL
+	else
+		src.time = src.time - ((world.timeofday - last_process) / 10)
 
-	return
+	updateDialog()
+
+	last_process = world.timeofday
 
 /obj/machinery/firealarm/power_change()
 	..()
@@ -216,6 +203,7 @@
 		time = Clamp(input(usr, "Enter time delay", "Fire Alarm Delayed Activation", time) as num, 0, 600)
 	else if (href_list["tmr"] == "start")
 		src.timing = 1
+		START_PROCESSING_MACHINE(src, MACHINERY_PROCESS_SELF)
 	else if (href_list["tmr"] == "stop")
 		src.timing = 0
 
@@ -225,16 +213,17 @@
 	var/area/area = get_area(src)
 	for(var/obj/machinery/firealarm/FA in area)
 		fire_alarm.clearAlarm(loc, FA)
+		FA.soundloop.stop(FA)
 	update_icon()
 	return
 
 /obj/machinery/firealarm/proc/alarm(var/duration = 0)
-	if (!( src.working))
+	if(!(src.working))
 		return
 	var/area/area = get_area(src)
 	for(var/obj/machinery/firealarm/FA in area)
 		fire_alarm.triggerAlarm(loc, FA, duration)
-		playsound(FA.loc, 'sound/ambience/firealarm.ogg', 75, 0)
+		FA.soundloop.start(FA)
 	update_icon()
 	return
 
@@ -245,6 +234,8 @@
 
 /obj/machinery/firealarm/Initialize(mapload, ndir = 0, building)
 	. = ..(mapload, ndir)
+
+	seclevel = get_security_level()
 
 	if(building)
 		buildstage = 0
@@ -257,6 +248,14 @@
 
 	if(isContactLevel(z))
 		set_security_level(security_level ? get_security_level() : "green")
+	soundloop = new(src, FALSE)
+
+	var/area/A = get_area(src)
+	RegisterSignal(A, COMSIG_AREA_FIRE_ALARM, /atom/.proc/update_icon)
+
+/obj/machinery/firealarm/Destroy()
+	QDEL_NULL(soundloop)
+	. = ..()
 
 // Convenience subtypes for mappers.
 /obj/machinery/firealarm/north

@@ -1,6 +1,6 @@
 /obj/item/gun/projectile/shotgun
 	name = "strange shotgun"
-	desc = "A strange shotgun that doesn't seem to belong anywhere. You feel like you shouldn't be able to see this and should... submit an issue?"
+	desc = DESC_PARENT
 	var/can_sawoff = FALSE
 	var/sawnoff_workmsg
 	var/sawing_in_progress = FALSE
@@ -23,7 +23,7 @@
 			return
 
 		sawing_in_progress = TRUE
-		if(do_after(user, 30, act_target = src))	//SHIT IS STEALTHY EYYYYY
+		if(A.use_tool(src, user, 30, volume = 50))	//SHIT IS STEALTHY EYYYYY
 			sawing_in_progress = FALSE
 			saw_off(user, A)
 		else
@@ -58,7 +58,7 @@
 	fire_sound = 'sound/weapons/gunshot/gunshot_shotgun2.ogg'
 	is_wieldable = TRUE
 	var/recentpump = 0 // to prevent spammage
-	var/rack_sound = 'sound/weapons/shotgun_pump.ogg'
+	var/rack_sound = /singleton/sound_category/shotgun_pump
 	var/rack_verb = "pump"
 
 /obj/item/gun/projectile/shotgun/pump/consume_next_projectile()

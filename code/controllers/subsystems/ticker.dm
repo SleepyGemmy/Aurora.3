@@ -11,7 +11,8 @@ var/datum/controller/subsystem/ticker/SSticker
 	name = "Ticker"
 
 	priority = SS_PRIORITY_TICKER
-	flags = SS_NO_TICK_CHECK | SS_FIRE_IN_LOBBY
+	flags = SS_NO_TICK_CHECK
+	runlevels = RUNLEVELS_DEFAULT | RUNLEVEL_LOBBY
 	init_order = SS_INIT_LOBBY
 
 	wait = 1 SECOND
@@ -56,8 +57,7 @@ var/datum/controller/subsystem/ticker/SSticker
 		'sound/music/space.ogg',
 		'sound/music/traitor.ogg',
 		'sound/music/title2.ogg',
-		'sound/music/clouds.s3m',
-		'sound/music/space_oddity.ogg'
+		'sound/music/clouds.s3m'
 	)
 
 	var/lobby_ready = FALSE
@@ -155,11 +155,13 @@ var/datum/controller/subsystem/ticker/SSticker
 
 	if (pregame_timeleft <= 0 || current_state == GAME_STATE_SETTING_UP)
 		current_state = GAME_STATE_SETTING_UP
+		Master.SetRunLevel(RUNLEVEL_SETUP)
 		wait = 2 SECONDS
 		switch (setup())
 			if (SETUP_REVOTE)
 				wait = 1 SECOND
 				is_revote = TRUE
+				Master.SetRunLevel(RUNLEVEL_LOBBY)
 				pregame()
 			if (SETUP_REATTEMPT)
 				pregame_timeleft = 1 SECOND
@@ -182,6 +184,7 @@ var/datum/controller/subsystem/ticker/SSticker
 
 	if(!mode.explosion_in_progress && game_finished && (mode_finished || post_game))
 		current_state = GAME_STATE_FINISHED
+		Master.SetRunLevel(RUNLEVEL_POSTGAME)
 
 		declare_completion()
 
@@ -236,24 +239,25 @@ var/datum/controller/subsystem/ticker/SSticker
 		if(Player.mind && !isnewplayer(Player))
 			if(Player.stat != DEAD)
 				var/turf/playerTurf = get_turf(Player)
+				var/area/playerArea = get_area(playerTurf)
 				if(evacuation_controller.round_over() && evacuation_controller.emergency_evacuation)
-					if(isNotAdminLevel(playerTurf.z))
-						to_chat(Player, "<span class='notice'><b>You managed to survive, but were marooned on [station_name()] as [Player.real_name]...</b></span>")
+					if(isStationLevel(playerTurf.z) && is_station_area(playerArea))
+						to_chat(Player, SPAN_GOOD(SPAN_BOLD("You managed to survive the events on [station_name()] as [Player.real_name].")))
 					else
-						to_chat(Player, "<span class='good'><b>You managed to survive the events on [station_name()] as [Player.real_name].</b></span>")
-				else if(isAdminLevel(playerTurf.z))
-					to_chat(Player, "<span class='good'><b>You successfully underwent crew transfer after events on [station_name()] as [Player.real_name].</b></span>")
+						to_chat(Player, SPAN_NOTICE(SPAN_BOLD("You managed to survive, but were marooned as [Player.real_name]...")))
+				else if(isStationLevel(playerTurf.z) && is_station_area(playerArea))
+					to_chat(Player, SPAN_GOOD(SPAN_BOLD("You successfully underwent the bluespace jump after the events on [station_name()] as [Player.real_name].")))
 				else if(issilicon(Player))
-					to_chat(Player, "<span class='good'><b>You remain operational after the events on [station_name()] as [Player.real_name].</b></span>")
+					to_chat(Player, SPAN_GOOD(SPAN_BOLD("You remain operational after the events on [station_name()] as [Player.real_name].")))
 				else
-					to_chat(Player, "<span class='notice'><b>You missed the crew transfer after the events on [station_name()] as [Player.real_name].</b></span>")
+					to_chat(Player, SPAN_NOTICE(SPAN_BOLD("You missed the crew transfer after the events on [station_name()] as [Player.real_name].")))
 			else
 				if(istype(Player,/mob/abstract/observer))
 					var/mob/abstract/observer/O = Player
 					if(!O.started_as_observer)
-						to_chat(Player, "<span class='warning'><b>You did not survive the events on [station_name()]...</b></span>")
+						to_chat(Player, SPAN_WARNING(SPAN_BOLD("You did not survive the events on [station_name()]...")))
 				else
-					to_chat(Player, "<span class='warning'><b>You did not survive the events on [station_name()]...</b></span>")
+					to_chat(Player, SPAN_WARNING(SPAN_BOLD("You did not survive the events on [station_name()]...")))
 	to_world("<br>")
 
 	for (var/mob/living/silicon/ai/aiPlayer in mob_list)
@@ -277,7 +281,7 @@ var/datum/controller/subsystem/ticker/SSticker
 			dronecount++
 			continue
 
-		if (!robo.connected_ai)
+		if (!robo.connected_ai && !istype(robo,/mob/living/silicon/robot/shell))
 			if (robo.stat != 2)
 				to_world("<b>[robo.name] survived as an AI-less borg! Its laws were:</b>")
 			else
@@ -354,7 +358,7 @@ var/datum/controller/subsystem/ticker/SSticker
 	if(!istype(prefs) || force_name)
 		// trawl the whole list - we only do this on logout or job swap, aka when we can't guarantee the job datum being accurate
 		for(var/dept in ready_player_jobs)
-			if(LAZYISIN(ready_player_jobs[dept], ident))
+			if(!. && LAZYISIN(ready_player_jobs[dept], ident))
 				. = TRUE
 			ready_player_jobs[dept] -= ident
 		if(.)
@@ -363,10 +367,14 @@ var/datum/controller/subsystem/ticker/SSticker
 
 	var/datum/job/ready_job = prefs.return_chosen_high_job()
 
+	if(!istype(ready_job))
+		// literally how
+		return FALSE
+
 	for(var/dept in ready_job.departments)
-		if(ready_player_jobs[dept][prefs.real_name])
+		if(!. && ready_player_jobs[dept][prefs.real_name])
 			. = TRUE
-		LAZYREMOVE(ready_player_jobs[dept], prefs.real_name)
+		ready_player_jobs[dept] -= prefs.real_name
 
 	if(.)
 		update_ready_count()
@@ -502,7 +510,7 @@ var/datum/controller/subsystem/ticker/SSticker
 		fail_reasons +=  "Too many players, less than [mode.max_players] antagonist(s) needed"
 
 	if(can_start != GAME_FAILURE_NONE)
-		to_world("<B>Unable to start [mode.name].</B> [english_list(fail_reasons,"No reason specified",". ",". ")]")
+		to_world("<B>Unable to start the game mode, due to lack of available antagonists.</B> [english_list(fail_reasons,"No reason specified",". ",". ")]")
 		current_state = GAME_STATE_PREGAME
 		mode.fail_setup()
 		mode = null
@@ -534,7 +542,7 @@ var/datum/controller/subsystem/ticker/SSticker
 	equip_characters()
 	SSrecords.build_records()
 
-	Master.RoundStart()
+	Master.SetRunLevel(RUNLEVEL_GAME)
 	real_round_start_time = REALTIMEOFDAY
 	round_start_time = world.time
 
@@ -562,7 +570,7 @@ var/datum/controller/subsystem/ticker/SSticker
 			continue
 		var/obj/screen/new_player/selection/join_game/JG = locate() in NP.client.screen
 		JG.update_icon(NP)
-	to_world("<span class='notice'><B>Enjoy the game!</B></span>")
+	to_world(SPAN_NOTICE("<b>Enjoy the round!</b>"))
 	sound_to(world, sound('sound/AI/welcome.ogg'))
 	//Holiday Round-start stuff	~Carn
 	Holiday_Game_Start()
@@ -698,21 +706,14 @@ var/datum/controller/subsystem/ticker/SSticker
 			minds += player.mind
 
 /datum/controller/subsystem/ticker/proc/equip_characters()
-	var/captainless = TRUE
 	for(var/mob/living/carbon/human/player in player_list)
 		if(player && player.mind && player.mind.assigned_role)
-			if(player.mind.assigned_role == "Captain")
-				captainless = FALSE
 			if(!player_is_antag(player.mind, only_offstation_roles = 1))
 				SSjobs.EquipAugments(player, player.client.prefs)
 				SSjobs.EquipRank(player, player.mind.assigned_role, 0)
 				equip_custom_items(player)
 
 		CHECK_TICK
-	if(captainless)
-		for(var/mob/M in player_list)
-			if(!istype(M,/mob/abstract/new_player))
-				to_chat(M, "Captainship not forced on anyone.")
 
 // Registers a callback to run on round-start.
 /datum/controller/subsystem/ticker/proc/OnRoundstart(datum/callback/callback)
